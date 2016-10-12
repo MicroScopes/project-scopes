@@ -55,9 +55,6 @@ public class Arena : MonoBehaviour
 											initSpeed, 
 											Color.red);
 		}
-
-		//players [1].ChangeColor (Color.green);
-		//players [1].SetControlKeys (KeyCode.Z, KeyCode.X);
 	}
 
 
@@ -96,6 +93,7 @@ public class Arena : MonoBehaviour
 		{
 			players [0].ReduceSpeed ();
 		}
+
 		// helpful for getting KeyCode of pressed key (to set preferred keys for players in GUI)
 
 		/*foreach(KeyCode kcode in System.Enum.GetValues(typeof(KeyCode)))
@@ -145,17 +143,17 @@ public class Arena : MonoBehaviour
 					float posX = playerPosX - playerSize * cosDegree;
 					float posY = playerPosY + playerSize * sinDegree;
 
-					for (int i = 1; i < 2 * playerSize; i++) 
+					for (int i = 1; i < 2 * playerSize; i++)
 					{
 						float posX2 = posX + i * playerSize * cosDegree / playerSize;
 						float posY2 = posY - i * playerSize * sinDegree / playerSize;
 
-						for (int k = 1; k <= Mathf.CeilToInt (playerSize * 0.5f) + 3; k++) {
+						for (int k = 1; k <= Mathf.CeilToInt (playerSize * 0.7f) + 3; k++) {
 							DrawPixel (posX2 - sinDegree * k / 5.0f, posY2 - cosDegree * k / 5.0f, playerColor, true);
 						}
 
-					if ((i % 2 == 0 || i == 1) && DrawPixel (posX2 + 2.8f * sinDegree, posY2 + 2.8f * cosDegree, Color.green, false)) {
-							player.Collision ();
+						if (j == Mathf.CeilToInt(playerSpeed)-1 && (i % 2 == 0 || i == 1) && DrawPixel (posX2 + 1.5f * sinDegree, posY2 + 1.5f * cosDegree, Color.green, false)) {
+								player.Collision ();
 						} 
 
 						DrawPixel (posX2, posY2, playerColor, true);
@@ -169,55 +167,6 @@ public class Arena : MonoBehaviour
 	}
 
 
-	/*void DrawPlayers2 ()
-	{
-		foreach (Player player in players)
-		{
-			if (player.isActive ()) 
-			{
-				float playerPosX = player.GetX ();
-				float playerPosY = player.GetY ();
-
-				Color playerColor = player.GetColor ();
-
-				int playerSize = player.GetSize ();
-				float playerSpeed = player.GetSpeed ();
-
-				float sinDegree = Mathf.Sin (Mathf.PI * player.GetDegree ()) / (playerSize * 0.2f);
-				float cosDegree = Mathf.Cos (Mathf.PI * player.GetDegree ()) / (playerSize * 0.2f);
-
-				for (int j = 0; j < Mathf.CeilToInt(playerSpeed * playerSize * 0.1f); j++) 
-				{
-					playerPosX += sinDegree;
-					playerPosY += cosDegree;
-
-					float posX = playerPosX - playerSize * cosDegree * (playerSize * 0.2f);
-					float posY = playerPosY + playerSize * sinDegree * (playerSize * 0.2f);
-
-					for (int i = 0; i < 2 * playerSize; i++) {
-						float posX2 = posX + i * playerSize * cosDegree * (playerSize * 0.2f) / playerSize;
-						float posY2 = posY - i * playerSize * sinDegree * (playerSize * 0.2f) / playerSize;
-
-						DrawPixel (posX2, posY2, playerColor);
-
-						//if (DrawPixel (posX2 + sinDegree, posY2 + cosDegree, playerColor)) {
-						//	player.Collision ();
-						//}
-
-						//for (int k = 1; k <= Mathf.CeilToInt(playerSize * 0.5f) + 2; k++) 
-						{
-							//DrawPixel (posX2 - sinDegree*k/5.0f, posY2 - cosDegree*k/5.0f, playerColor);
-						}
-					}
-				}
-
-				player.SetX (playerPosX);
-				player.SetY (playerPosY);
-			}
-		}
-	}*/
-
-
 	bool DrawPixel (float x, float y, Color col, bool collCheck)
 	{
 		int pos = (Mathf.FloorToInt(y) * arenaSize + Mathf.FloorToInt(x)) % pixMap.Length;
@@ -227,7 +176,7 @@ public class Arena : MonoBehaviour
 			pos = (pixMap.Length + pos) % pixMap.Length;
 		}
 
-		if (pixMap [pos] == Color.black || pixMap [pos] == Color.green) 
+		if (pixMap [pos] == Color.black) 
 		{
 			if (collCheck) {
 				pixMap [pos] = col;

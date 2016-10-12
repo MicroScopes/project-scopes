@@ -18,6 +18,8 @@ public class Player// : MonoBehaviour
 
 	private bool active = true;
 
+	private int demage = 0;
+
 	public Player ()
 	{
 		playerPos = new Vector2(0.0f, 0.0f);
@@ -31,17 +33,6 @@ public class Player// : MonoBehaviour
 		keyLeft = KeyCode.LeftArrow;
 		keyRight = KeyCode.RightArrow;
 	}
-
-	/*public Player (Vector2 startPos, float startDeg, int size, int speed, Color col)
-	{
-		playerPos = startPos;
-
-		playerSize 		= size;
-		playerSpeed 	= speed;
-		playerDegree 	= startDeg;	
-
-		playerColor = col;
-	}*/
 
 	public void SetupPlayer(Vector2 startPos, float startDeg, int size, float speed, Color col)
 	{
@@ -161,6 +152,5 @@ public class Player// : MonoBehaviour
 	public void Collision()
 	{
 		active = false;
-		Debug.Log ("Collided");
 	}
 }
