@@ -17,10 +17,16 @@ public class Player// : MonoBehaviour
 	private int direction = 0;
 
 	private bool active = true;
+	private bool visible = true;
 
-	private int demage = 0;
+	private int holeDelay = 0;
+	private int holeTimerDelay = 0;
+	private int holeTimer = 1000;
+	private int holeSize = 50;
 
-	public Player ()
+	private GameObject playerHead;
+
+	public Player (GameObject head)
 	{
 		playerPos = new Vector2(0.0f, 0.0f);
 
@@ -32,6 +38,8 @@ public class Player// : MonoBehaviour
 
 		keyLeft = KeyCode.LeftArrow;
 		keyRight = KeyCode.RightArrow;
+
+		playerHead = head;
 	}
 
 	public void SetupPlayer(Vector2 startPos, float startDeg, int size, float speed, Color col)
@@ -50,13 +58,32 @@ public class Player// : MonoBehaviour
 
 	public void Turn ()
 	{
-		if (Input.GetKey (keyLeft)) 
-		{
-			playerDegree -= 0.02f + playerSpeed * 0.002f;
-		}
-		if (Input.GetKey (keyRight)) 
-		{
-			playerDegree += 0.02f + playerSpeed * 0.002f;
+		if (active) {
+
+			int hSize = Mathf.CeilToInt((holeSize / playerSpeed) * playerSize);
+
+			if (Input.GetKey (keyLeft)) {
+				playerDegree -= 0.02f + playerSpeed * 0.002f;
+			}
+			if (Input.GetKey (keyRight)) {
+				playerDegree += 0.02f + playerSpeed * 0.002f;
+			}
+
+			if (holeDelay < holeTimer) {
+				holeDelay+=10;
+			} else {
+				visible = false;
+				if (holeTimerDelay < hSize) {
+					holeTimerDelay+=10;
+				} else {
+					visible = true;
+					holeDelay = 0;
+					holeTimerDelay = 0;
+				}
+			}
+
+			playerHead.transform.position = new Vector3(playerPos.x*0.01f, playerPos.y*0.01f, 0.0f);
+			playerHead.transform.localScale = new Vector3 (playerSize*0.02f, playerSize*0.02f, playerSize*0.02f);
 		}
 	}
 
@@ -147,6 +174,11 @@ public class Player// : MonoBehaviour
 	public bool isActive()
 	{
 		return active;
+	}
+
+	public bool isVisible()
+	{
+		return visible;
 	}
 
 	public void Collision()

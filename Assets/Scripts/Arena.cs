@@ -9,9 +9,15 @@ using System.Collections.Generic;
 
 public class Arena : MonoBehaviour 
 {
-	private Color[] pixMap;					// Table of texture pixel colors
+	public GameObject head;
+
+	private Color[] mianPixMap;					// Table of texture pixel colors
+	//private Color[] topPixMap;
+	//private Color[] alphaMap;
+
 	private MeshRenderer renderer;			// Arena renderer component
-	private Texture2D texture;				// Arena texture
+	private Texture2D mainTexture;				// Arena texture
+	//private Texture2D topTexture;
 
 	private int arenaSize;
 
@@ -21,7 +27,7 @@ public class Arena : MonoBehaviour
 	private int initSize = 4;
 	private float initSpeed = 2.0f;
 
-	private int noOfPlayers = 1;
+	private int noOfPlayers = 2;
 	private List<Player> players = new List<Player>();
 
 
@@ -29,22 +35,27 @@ public class Arena : MonoBehaviour
 	void Start() 
 	{		
 		frameRate 		= 0.01f;
-		arenaSize 		= 800;
+		arenaSize 		= 600;
 
 		renderer 	= GetComponent<MeshRenderer> ();
-		texture 	= new Texture2D (arenaSize,arenaSize);
-		pixMap 		= texture.GetPixels ();
+		mainTexture = new Texture2D (arenaSize,arenaSize);
+		//topTexture	= new Texture2D (arenaSize,arenaSize);
+		mianPixMap 	= mainTexture.GetPixels ();
+		//topPixMap 	= topTexture.GetPixels ();
+		//alphaMap 	= new Color[arenaSize * arenaSize];
 
-		texture.filterMode = FilterMode.Point;//Trilinear;
+		mainTexture.filterMode = FilterMode.Trilinear;
+		//topTexture.filterMode = FilterMode.Trilinear;
 
 		// Setting texture to Arena renderer
-		renderer.material.mainTexture = texture;
+		renderer.materials[0].mainTexture = mainTexture;
+		//renderer.materials[1].mainTexture = topTexture;
 
 		// Setting Arena background color
 		SetArenaBgColor (Color.black);
 
 		for (int i = 0; i < noOfPlayers; i++) {
-			players.Add (new Player ());
+			players.Add (new Player (Instantiate(head)));
 		}
 
 		foreach (Player player in players) {
@@ -55,6 +66,11 @@ public class Arena : MonoBehaviour
 											initSpeed, 
 											Color.red);
 		}
+
+		players [1].ChangeColor (Color.green);
+		players [1].SetControlKeys (KeyCode.Z, KeyCode.X);
+
+		//SetTopArena ();
 	}
 
 
@@ -76,22 +92,38 @@ public class Arena : MonoBehaviour
 
 		if(Input.GetKeyDown(KeyCode.G))
 		{
-			players [0].DoubleSize ();
+			//players [0].DoubleSize ();
+			foreach (Player player in players) 
+			{
+				player.DoubleSize ();
+			}
 		}
 
 		if(Input.GetKeyDown(KeyCode.H))
 		{
-			players [0].ReduceSize ();
+			//players [0].ReduceSize ();
+			foreach (Player player in players) 
+			{
+				player.ReduceSize ();
+			}
 		}
 
 		if(Input.GetKeyDown(KeyCode.J))
 		{
-			players [0].DoubleSpeed ();
+			//players [0].DoubleSpeed ();
+			foreach (Player player in players) 
+			{
+				player.DoubleSpeed ();
+			}
 		}
 
 		if(Input.GetKeyDown(KeyCode.K))
 		{
-			players [0].ReduceSpeed ();
+			//players [0].ReduceSpeed ();
+			foreach (Player player in players) 
+			{
+				player.ReduceSpeed ();
+			}
 		}
 
 		// helpful for getting KeyCode of pressed key (to set preferred keys for players in GUI)
@@ -108,8 +140,12 @@ public class Arena : MonoBehaviour
 	{
 		DrawPlayers ();
 
-		texture.SetPixels (pixMap);
-		texture.Apply (false);
+		DrawHeads ();
+
+		mainTexture.SetPixels (mianPixMap);
+		mainTexture.Apply (false);
+		//topTexture.SetPixels (topPixMap);
+		//topTexture.Apply (false);
 	}
 
 
@@ -149,16 +185,29 @@ public class Arena : MonoBehaviour
 						float posY2 = posY - i * playerSize * sinDegree / playerSize;
 
 						for (int k = 1; k <= Mathf.CeilToInt (playerSize * 0.7f) + 3; k++) {
-							DrawPixel (posX2 - sinDegree * k / 5.0f, posY2 - cosDegree * k / 5.0f, playerColor, true);
+							DrawPixel (mianPixMap, posX2 - sinDegree * k / 5.0f, posY2 - cosDegree * k / 5.0f, playerColor, player.isVisible(), true);
 						}
 
-						if (j == Mathf.CeilToInt(playerSpeed)-1 && (i % 2 == 0 || i == 1) && DrawPixel (posX2 + 1.5f * sinDegree, posY2 + 1.5f * cosDegree, Color.green, false)) {
+						if (j == Mathf.CeilToInt(playerSpeed)-1 && (i % 2 == 0 || i == 1) && DrawPixel (mianPixMap, posX2 + 1.5f * sinDegree, posY2 + 1.5f * cosDegree, Color.green, player.isVisible(), false)) {
 								player.Collision ();
 						} 
 
-						DrawPixel (posX2, posY2, playerColor, true);
+						DrawPixel (mianPixMap, posX2, posY2, playerColor, player.isVisible(), true);
 					}
 				}
+			}
+
+			playerPosX %= arenaSize;
+			playerPosY %= arenaSize;
+
+			if (playerPosX < 0) 
+			{
+				playerPosX = (arenaSize + playerPosX) % arenaSize;
+			}
+
+			if (playerPosY < 0) 
+			{
+				playerPosY = (arenaSize + playerPosY) % arenaSize;
 			}
 
 			player.SetX (playerPosX);
@@ -167,37 +216,86 @@ public class Arena : MonoBehaviour
 	}
 
 
-	bool DrawPixel (float x, float y, Color col, bool collCheck)
+	void DrawHeads ()
 	{
-		int pos = (Mathf.FloorToInt(y) * arenaSize + Mathf.FloorToInt(x)) % pixMap.Length;
+		//topPixMap = (Color[])alphaMap.Clone ();
+
+		foreach (Player player in players) 
+		{
+			DrawHead(player.GetX(), player.GetY());
+			//DrawPixel2 (topPixMap, player.GetX(), player.GetY(), Color.yellow);
+			//DrawPixel2 (topPixMap, player.GetX()+1, player.GetY(), Color.yellow);
+			//DrawPixel2 (topPixMap, player.GetX()+1, player.GetY()+1, Color.yellow);
+			//DrawPixel2 (topPixMap, player.GetX(), player.GetY()+1, Color.yellow);
+		}
+	}
+
+	void DrawHead (float x, float y)
+	{
+
+	}
+
+
+	bool DrawPixel (Color[] map, float x, float y, Color col, bool visible, bool collCheck)
+	{
+		int pos = (Mathf.FloorToInt(y) * arenaSize + Mathf.FloorToInt(x)) % map.Length;
 
 		if (pos < 0) 
 		{
-			pos = (pixMap.Length + pos) % pixMap.Length;
+			pos = (map.Length + pos) % map.Length;
 		}
 
-		if (pixMap [pos] == Color.black) 
+		if (visible) 
 		{
-			if (collCheck) {
-				pixMap [pos] = col;
+			if (map [pos] == Color.black) 
+			{
+				if (collCheck) {
+					map [pos] = col;
+				}
+				return false;
+			} 
+			else 
+			{
+				return true;
 			}
-			return false;
-		} 
-		else 
-		{
-			return true;
 		}
+
+		return false;
+	}
+
+
+	void DrawPixel2 (Color[] map, float x, float y, Color col)
+	{
+		int pos = (Mathf.FloorToInt(y) * arenaSize + Mathf.FloorToInt(x)) % map.Length;
+
+		if (pos < 0) {
+			pos = (map.Length + pos) % map.Length;
+		}
+
+		map [pos] = col;
 	}
 
 
 	void SetArenaBgColor (Color col)
 	{
-		for (int i = 0; i < pixMap.Length; i++) 
+		for (int i = 0; i < mianPixMap.Length; i++) 
 		{
-			pixMap [i] = col;
+			mianPixMap [i] = col;
 		}
 
-		texture.SetPixels (pixMap);
-		texture.Apply (false);
+		mainTexture.SetPixels (mianPixMap);
+		mainTexture.Apply (false);
 	}
+
+	/*void SetTopArena ()
+	{
+		for (int i = 0; i < topPixMap.Length; i++) 
+		{
+			topPixMap [i] = Color.clear;
+			alphaMap [i] = Color.clear;
+		}
+
+		topTexture.SetPixels (topPixMap);
+		topTexture.Apply (false);
+	}*/
 }
