@@ -53,3 +53,11 @@ obj/
 .Trashes
 ehthumbs.db
 Thumbs.db
+
+# LaTeX
+latex/
+*.out
+*.aux
+*.log
+*.synctex.gz
+*.toc
