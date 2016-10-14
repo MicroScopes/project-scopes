@@ -1,0 +1,195 @@
+%--------------------------------------------------
+%                 P A C K A G E S
+%--------------------------------------------------
+
+\documentclass[10pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[a4paper, total={6in, 8in}]{geometry}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage{fancyvrb}
+\usepackage{enumitem}
+
+%--------------------------------------------------
+%   D O C U M E N T   C O N F I G U R A T I O N
+%--------------------------------------------------
+
+\newcommand*{\pslogo}{\includegraphics{logo1}}
+
+%--------------------------------------------------
+%                T I T L E P A G E
+%--------------------------------------------------
+
+\newcommand*{\dctitle}
+{
+	\begingroup
+	\hbox
+	{
+		\hspace*{0.15\textwidth}
+		\rule{1pt}{\textheight}
+		\hspace*{0.05\textwidth}
+		\parbox[b]{0.8\textwidth}
+		{
+			{\noindent\Huge\bfseries PROJECT-SCOPES \\[0.5\baselineskip] DESIGN CONVENTIONS}\\[2\baselineskip]
+			{\noindent\Large\scshape by INSERT TEAM NAME HERE!!! \par}
+
+			\vspace{0.5\textheight}
+			{\noindent INSERT PROJECT-SCOPES LOGO HERE!!! \par} 
+			\pslogo
+		}
+	}
+	\endgroup
+}
+
+%--------------------------------------------------
+%         D O C U M E N T   C O N T E N T
+%--------------------------------------------------
+
+\begin{document}
+
+% titlepage
+\dctitle
+
+% table of contents
+\tableofcontents
+
+% document content
+\newpage
+
+% comments sections
+\section{Comments rules}
+\noindent General rule that refers to all cases is that any line cannot be longer than 80 characters.
+\subsection{Doxygen comments}
+\noindent In order to make the project well documented doxygent tool is used. The following rules must be followed to keep the code clear and readable.
+\begin{itemize}[leftmargin=*]
+	\item[-] Doxygen comments are used to document \hyperref[class-files]{class-files}, \hyperref[classes]{classes}, \hyperref[public-methods]{public methods} and \hyperref[attributes]{public attributes}.
+	\item[-] First line of the doxygen comment starts with \verb+/*!+ and then is followed by new line. All other lines, until the penultimate, contain \verb+*+ preceded with one whitespace. Last line closes the comment with \verb+*/+ in front of which one whitespace occurs.
+\begin{Verbatim}[frame=single]
+/*!
+ * ... text ...
+ */
+\end{Verbatim}
+	\item[-] All doxygen commands are allowed to be used and must start with \verb+@+. For more information please refer to \url{https://www.stack.nl/~dimitri/doxygen/manual/commands.html}.
+	\item[-] The minimum number of commands that must be used depends on the comment type and is as follows:
+	\begin{itemize}
+		\item in case of class-file: \verb+@file+, \verb+@brief+, \verb+@author+,
+		\item in case of class definition: \verb+@brief+, \verb+@details+,
+		\item in case of public attributes: \verb+@brief+,
+		\item in case of public methods: \verb+@brief+, \verb+@details+, \verb+@param+ (if applicable), \verb+@return+ (if applicable).
+	\end{itemize}
+	\item[-] Each doxygen command is followed by one whitespace and then comment message.
+	\item[-] Between \verb+@brief+ and \verb+@details+ commands there is always one comment line break.
+\begin{Verbatim}[frame=single]
+/*!
+ * @brief ...
+ *
+ * @details ...
+ */
+\end{Verbatim}
+\end{itemize}
+\subsection{Non-Doxygen comments}
+\noindent For all the comments that are not included in the category of doxygen comments single line \verb+C#+ comment style is used. This rule applies to multiline comments as well. Each comment line starts with \verb+//+ followed by one whitespace.
+\begin{Verbatim}[frame=single]
+// ... text ...
+// ... text ...
+\end{Verbatim}
+\noindent This kind of comment is used to document \hyperref[general]{new section of code}, \hyperref[private-methods]{protected and private methods} and \hyperref[attributes]{protected and private attributes}.
+
+\subsection{Files}\label{class-files}
+\noindent Each file that contains a class definition should begin with a doxygen comment with the following information:
+\begin{itemize}
+ \item[-] name of the file in which it is located (the same as the class name),
+ \item[-] brief information of what it contains,
+ \item[-] name of the author (e.g. team name) that created the file.
+\end{itemize}
+\begin{Verbatim}[frame=single]
+/*!
+ * @file ...
+ * @brief ...
+ * @author ...
+ */
+\end{Verbatim}
+
+\subsection{General information}\label{general}
+\noindent General commets are apllied to indicate that a new section of code begins. Each general type comment consists of 3 lines. First and last line are identical and starts with \verb+//+ followed by 50 \verb+=+. Middle line contains information of what type of section it opens. The information shall be written in capital letters only separated by one whitespace. It is also centered relative to first and last line. There are 3 sections which can be considered as separate parts of code:
+\begin{itemize}
+	\item[-] directives,
+\begin{Verbatim}[frame=single]
+//==================================================
+//               D I R E C T I V E S
+//==================================================
+\end{Verbatim}
+	\item[-] namespaces,
+\begin{Verbatim}[frame=single]
+//==================================================
+//                N A M E S P A C E
+//==================================================
+\end{Verbatim}
+	\item[-] classes.
+\begin{Verbatim}[frame=single]
+//==================================================
+//                    C L A S S
+//==================================================
+\end{Verbatim}
+\end{itemize}
+
+\subsection{Classes}\label{classes}
+\noindent Each class must be commented with doxygen comment type that contains two mandatory commands: \verb+@brief+ and \verb+@details+.
+\begin{Verbatim}[frame=single]
+/*!
+ * @brief ...
+ *
+ * @details ...
+ */
+\end{Verbatim}
+\subsubsection{Methods}
+\noindent\label{public-methods}Public methods must be documented with doxygen comment type that contains two mandatory commands: \verb+@bried+ and \verb+@details+. If the return type of the method is different than \verb+void+ there must be \verb+@return+ command used to explain the importance of the return value. Additionaly, if the method takes a parameter, it must be documented with \verb+@param+ command.
+\begin{Verbatim}[frame=single]
+/*!
+ * @brief ...
+ *
+ * @details ...
+ * @param ...
+ * @param ...
+ * @return ... 
+ */
+\end{Verbatim}
+\label{private-methods}Protected and private methods are commented with non-doxygent comment style, but parameters and return value must be taken into account.
+\subsubsection{Attributes}\label{attributes}
+\noindent For all public attributes \hyperref[classes]{class} rules are taken into consideration. In case of protected and privated attributes non-doxygen comment style is used.
+
+\section{Naming conventions}
+\noindent The overall style used in the project is consistent with the \verb+C#+ language style conventions. For detailed information please refer to \url{https://msdn.microsoft.com/en-us/library/ms229043.aspx}. There are some additional rules on \hyperref[file-name]{files} and \hyperref[class-name]{classes} that are described below.
+\subsection{Files}\label{file-name}
+\noindent The \verb+C#+ file name and the name of the class contained has to be matched. Each file must contain only one class definition (does not apply to private classes).
+\subsection{Classes}\label{class-name}
+\noindent Each class name should start with the project name abbrieviation, i.e. PS for Project-Scopes. It must be then followed by proper class name (without any separator between).
+\begin{Verbatim}[frame=single]
+class PSClassName { ... }
+\end{Verbatim}
+\section{Style guideline}
+\subsection{Braces}
+\noindent To improve comprehention of the code, all braces are located in new line. It applies to both single and multilnie instructions.
+\begin{Verbatim}[frame=single]
+if (...)
+{
+	...
+}
+else
+{
+	...
+}
+\end{Verbatim}
+\begin{Verbatim}[frame=single]
+for (...)
+{
+	...
+	...
+	...
+}
+\end{Verbatim}
+
+\end{document}
