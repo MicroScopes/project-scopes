@@ -82,9 +82,16 @@ public class Player// : MonoBehaviour
 				}
 			}
 
-			playerHead.transform.position = new Vector3(playerPos.x*0.01f, playerPos.y*0.01f, 0.0f);
+			//playerHead.transform.position = new Vector3(playerPos.x*0.01f, playerPos.y*0.01f, 0.0f);
 			playerHead.transform.localScale = new Vector3 (playerSize*0.02f, playerSize*0.02f, playerSize*0.02f);
+			//MoveHead();
 		}
+	}
+
+	public void MoveHead(float x, float y)
+	{
+		playerHead.transform.position = new Vector3(x*0.01f, y*0.01f, 0.0f);
+		//playerHead.transform.localScale = new Vector3 (playerSize*0.02f, playerSize*0.02f, playerSize*0.02f);
 	}
 
 	public float GetX ()
@@ -160,7 +167,7 @@ public class Player// : MonoBehaviour
 	{
 		if (playerSize > 4) {
 			playerSize -= 4;
-		} else if (playerSize > 1 && playerSize <= 4) {
+		} else if (playerSize > 2 && playerSize <= 4) {
 			playerSize -= 1;
 		}
 	}
