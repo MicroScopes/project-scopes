@@ -86,10 +86,8 @@ public class Player// : MonoBehaviour
 				}
 			}
 
-			//playerHead.transform.position = new Vector3(playerPos.x*0.01f, playerPos.y*0.01f, 0.0f);
 			playerHead.transform.localScale = new Vector3 (playerSize*0.02f, playerSize*0.02f, playerSize*0.02f);
 			borderHead.transform.localScale = new Vector3 (playerSize*0.02f, playerSize*0.02f, playerSize*0.02f);
-			//MoveHead();
 		}
 	}
 
