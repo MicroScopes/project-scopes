@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using ProjectScopes;
 
 public class Arena : MonoBehaviour 
 {
@@ -17,9 +18,13 @@ public class Arena : MonoBehaviour
 
 	private Player[] players = new Player[2];
 
+    private Configurator configurator = GUIDataCollector.configurator;
+
 	// Use this for initialization
 	void Start() 
 	{
+        Debug.Log(configurator.CurrentNoOfPlayers);
+
 		frameRate 		= 0.01f;
 		arenaSize 		= 600;
 
