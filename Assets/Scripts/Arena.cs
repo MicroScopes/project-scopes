@@ -24,7 +24,7 @@ public class Arena : MonoBehaviour
 	private int initSize = 4;
 	private float initSpeed = 2.0f;
 
-	private int noOfPlayers = 2;
+	private int noOfPlayers = 1;
 	private List<Player> players = new List<Player>();
 
 
@@ -47,7 +47,7 @@ public class Arena : MonoBehaviour
 		SetArenaBgColor (Color.black);
 
 		for (int i = 0; i < noOfPlayers; i++) {
-			players.Add (new Player (Instantiate(head)));
+			players.Add (new Player (Instantiate(head), Instantiate(head)));
 		}
 
 		foreach (Player player in players) {
@@ -59,8 +59,8 @@ public class Arena : MonoBehaviour
 											Color.red);
 		}
 
-		players [1].ChangeColor (Color.green);
-		players [1].SetControlKeys (KeyCode.Z, KeyCode.X);
+		//players [1].ChangeColor (Color.green);
+		//players [1].SetControlKeys (KeyCode.Z, KeyCode.X);
 	}
 
 
@@ -194,14 +194,14 @@ public class Arena : MonoBehaviour
 			player.SetX (playerPosX);
 			player.SetY (playerPosY);
 
-			player.MoveHead (playerPosX + sinDegree, playerPosY + cosDegree);
+			player.MoveHead (playerPosX + sinDegree, playerPosY + cosDegree, arenaSize);
 		}
 	}
 
 
 	bool DrawPixel (Color[] map, float x, float y, Color col, bool visible, bool collCheck)
 	{
-		int pos = (Mathf.FloorToInt(y) * arenaSize + Mathf.FloorToInt(x)) % map.Length;
+		int pos = (Mathf.FloorToInt (y) * arenaSize + Mathf.FloorToInt (x)) % map.Length;
 
 		if (pos < 0) 
 		{

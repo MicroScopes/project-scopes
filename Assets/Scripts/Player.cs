@@ -25,8 +25,9 @@ public class Player// : MonoBehaviour
 	private int holeSize = 50;
 
 	private GameObject playerHead;
+	private GameObject borderHead;
 
-	public Player (GameObject head)
+	public Player (GameObject head, GameObject bHead)
 	{
 		playerPos = new Vector2(0.0f, 0.0f);
 
@@ -40,6 +41,7 @@ public class Player// : MonoBehaviour
 		keyRight = KeyCode.RightArrow;
 
 		playerHead = head;
+		borderHead = bHead;
 	}
 
 	public void SetupPlayer(Vector2 startPos, float startDeg, int size, float speed, Color col)
@@ -54,6 +56,8 @@ public class Player// : MonoBehaviour
 
 		keyLeft = KeyCode.LeftArrow;
 		keyRight = KeyCode.RightArrow;
+
+		borderHead.transform.position = new Vector3(-playerSize, -playerSize, 0.0f);
 	}
 
 	public void Turn ()
@@ -84,14 +88,30 @@ public class Player// : MonoBehaviour
 
 			//playerHead.transform.position = new Vector3(playerPos.x*0.01f, playerPos.y*0.01f, 0.0f);
 			playerHead.transform.localScale = new Vector3 (playerSize*0.02f, playerSize*0.02f, playerSize*0.02f);
+			borderHead.transform.localScale = new Vector3 (playerSize*0.02f, playerSize*0.02f, playerSize*0.02f);
 			//MoveHead();
 		}
 	}
 
-	public void MoveHead(float x, float y)
+	public void MoveHead(float x, float y, int arenaSize)
 	{
 		playerHead.transform.position = new Vector3(x*0.01f, y*0.01f, 0.0f);
-		//playerHead.transform.localScale = new Vector3 (playerSize*0.02f, playerSize*0.02f, playerSize*0.02f);
+
+		if (x < 0 + playerSize) {
+			borderHead.transform.position = new Vector3 ((x + arenaSize) * 0.01f, y * 0.01f, 0.0f);
+		}
+
+		if (x > arenaSize - playerSize) {
+			borderHead.transform.position = new Vector3 ((x - arenaSize) * 0.01f, y * 0.01f, 0.0f);
+		}
+
+		if (y < 0 + playerSize) {
+			borderHead.transform.position = new Vector3 (x * 0.01f, (y + arenaSize) * 0.01f, 0.0f);
+		}
+
+		if (y > arenaSize - playerSize) {
+			borderHead.transform.position = new Vector3 (x * 0.01f, (y - arenaSize) * 0.01f, 0.0f);
+		}
 	}
 
 	public float GetX ()
