@@ -12,8 +12,6 @@ public class Arena : MonoBehaviour
 	public GameObject head;
 
 	private Color[] mianPixMap;				// Table of texture pixel colors
-
-	private MeshRenderer renderer;			// Arena renderer component
 	private Texture2D mainTexture;			// Arena texture
 
 	private int arenaSize;
@@ -24,7 +22,7 @@ public class Arena : MonoBehaviour
 	private int initSize = 4;
 	private float initSpeed = 2.0f;
 
-	private int noOfPlayers = 1;
+	private int noOfPlayers = 2;
 	private List<Player> players = new List<Player>();
 
 
@@ -34,20 +32,20 @@ public class Arena : MonoBehaviour
 		frameRate 		= 0.01f;
 		arenaSize 		= 600;
 
-		renderer 	= GetComponent<MeshRenderer> ();
 		mainTexture = new Texture2D (arenaSize,arenaSize);
 		mianPixMap 	= mainTexture.GetPixels ();
 
 		mainTexture.filterMode = FilterMode.Trilinear;
 
 		// Setting texture to Arena renderer
+		MeshRenderer renderer = GetComponent<MeshRenderer> ();
 		renderer.materials[0].mainTexture = mainTexture;
 
 		// Setting Arena background color
 		SetArenaBgColor (Color.black);
 
 		for (int i = 0; i < noOfPlayers; i++) {
-			players.Add (new Player (Instantiate(head), Instantiate(head)));
+			players.Add (new Player (Instantiate(head), Instantiate(head), Instantiate(head), Instantiate(head)));
 		}
 
 		foreach (Player player in players) {
@@ -59,8 +57,8 @@ public class Arena : MonoBehaviour
 											Color.red);
 		}
 
-		//players [1].ChangeColor (Color.green);
-		//players [1].SetControlKeys (KeyCode.Z, KeyCode.X);
+		players [1].PlayerColor = Color.green;
+		players [1].SetControlKeys (KeyCode.Z, KeyCode.X);
 	}
 
 
@@ -87,7 +85,7 @@ public class Arena : MonoBehaviour
 			}
 		}
 
-		if(Input.GetKeyDown(KeyCode.H))
+		if(Input.GetKeyDown(KeyCode.H))//
 		{
 			foreach (Player player in players) 
 			{
@@ -99,7 +97,7 @@ public class Arena : MonoBehaviour
 		{
 			foreach (Player player in players) 
 			{
-				player.DoubleSpeed ();
+				player.IncreaseSpeed ();
 			}
 		}
 
@@ -134,20 +132,20 @@ public class Arena : MonoBehaviour
 	{
 		foreach (Player player in players)
 		{
-			float playerPosX = player.GetX ();
-			float playerPosY = player.GetY ();
+			float playerPosX = player.PosX;
+			float playerPosY = player.PosY;
 
-			Color playerColor = player.GetColor ();
+			Color playerColor = player.PlayerColor;
 
-			int playerSize = player.GetSize ();
-			float playerSpeed = player.GetSpeed ();
+			int playerSize = player.PlayerSize;
+			float playerSpeed = player.PlayerSpeed;
 
-			float sinDegree = Mathf.Sin (Mathf.PI * player.GetDegree ());
-			float cosDegree = Mathf.Cos (Mathf.PI * player.GetDegree ());
+			float sinDegree = Mathf.Sin (Mathf.PI * player.PlayerDirection);
+			float cosDegree = Mathf.Cos (Mathf.PI * player.PlayerDirection);
 
 			for (int j = 0; j < Mathf.CeilToInt(playerSpeed); j++) 
 			{
-				if (player.isActive ()) 
+				if (player.IsActive) 
 				{
 					if (playerSpeed < 1) {
 						playerPosX += sinDegree * playerSpeed;
@@ -166,11 +164,11 @@ public class Arena : MonoBehaviour
 						float posY2 = posY - i * playerSize * sinDegree / playerSize;
 
 						for (int k = 1; k <= Mathf.CeilToInt (playerSize * 0.7f) + 3; k++) {
-							DrawPixel (mianPixMap, posX2 - sinDegree * k / 5.0f, posY2 - cosDegree * k / 5.0f, playerColor, player.isVisible(), true);
+							DrawPixel (mianPixMap, posX2 - sinDegree * k * 0.2f, posY2 - cosDegree * k * 0.2f, playerColor, player.isVisible(), true);
 						}
 							
-						if (/*j % Mathf.CeilToInt(playerSpeed)-1 == 0 &&*/ (i % 2 == 0 || i == 1) && DrawPixel (mianPixMap, posX2 + 2.5f * sinDegree, posY2 + 2.5f * cosDegree, Color.green, player.isVisible(), false)) {
-								player.Collision ();
+						if ((i % 2 == 0 || i == 1) && DrawPixel (mianPixMap, posX2 + (playerSize * 0.5f + 1) * sinDegree, posY2 + (playerSize * 0.5f + 1) * cosDegree, Color.green, player.isVisible(), false)) {
+							player.IsActive = false;
 						} 
 
 						DrawPixel (mianPixMap, posX2, posY2, playerColor, player.isVisible(), true);
@@ -191,8 +189,8 @@ public class Arena : MonoBehaviour
 				playerPosY = (arenaSize + playerPosY) % arenaSize;
 			}
 
-			player.SetX (playerPosX);
-			player.SetY (playerPosY);
+			player.PosX = playerPosX;
+			player.PosY = playerPosY;
 
 			player.MoveHead (playerPosX + sinDegree, playerPosY + cosDegree, arenaSize);
 		}
