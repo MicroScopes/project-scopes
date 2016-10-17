@@ -167,7 +167,7 @@ public class Arena : MonoBehaviour
 							DrawPixel (mianPixMap, posX2 - sinDegree * k * 0.2f, posY2 - cosDegree * k * 0.2f, playerColor, player.isVisible(), true);
 						}
 							
-						if ((i % 2 == 0 || i == 1) && DrawPixel (mianPixMap, posX2 + (playerSize * 0.5f + 1) * sinDegree, posY2 + (playerSize * 0.5f + 1) * cosDegree, Color.green, player.isVisible(), false)) {
+						if ((i % 2 == 0 || i == 1) && DrawPixel (mianPixMap, posX2 + (playerSize * 0.5f + 1) * sinDegree, posY2 + (playerSize * 0.3f + 1) * cosDegree, Color.green, player.isVisible(), false)) {
 							player.IsActive = false;
 						} 
 
