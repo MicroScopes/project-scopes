@@ -7,7 +7,7 @@
 //==================================================
 //               D I R E C T I V E S
 //==================================================
-
+using UnityEngine;
 using System.Collections.Generic;
 
 //==================================================
@@ -49,7 +49,7 @@ public class Configurator
 
     // Initial speed of all players. User is able to specify whether the speed
     // should be slow (0), normal (1) or fast (2). Default value: normal.
-    private int initialPlayersSpeed = 1;
+    private float initialPlayersSpeed = 1;
     private float[] playersSpeed = new float[] { 0.5f, 1.0f, 1.5f };
 
     // Initial size of all players. User is able to specify whether the size
@@ -57,6 +57,22 @@ public class Configurator
     private int initialPlayersSize = 1;
     private float[] playersSize = new float[] { 1.0f, 3.0f, 5.0f };
 
+        public List<PlayerInitData> Players = new List<PlayerInitData>();
+
+
+        //TESTOWA KONF
+        public Configurator()
+        {
+            currentNoOfPlayers = 2;
+            initialArenaSize = 600;
+            initialPlayersSize = 5;
+            initialPlayersSpeed = 2.0f;
+
+            Players.Add (new PlayerInitData (initialPlayersSize, initialPlayersSpeed, Color.red, KeyCode.LeftArrow, KeyCode.RightArrow));
+            Players.Add (new PlayerInitData (initialPlayersSize, initialPlayersSpeed, Color.green, KeyCode.Z, KeyCode.X));
+            //Players.Add (new PlayerInitData (5, 2.0f, Color.blue, KeyCode.B, KeyCode.N));
+        }
+       
     /*!
      * @brief Allows to set and get current number of players.
      * 
@@ -102,7 +118,7 @@ public class Configurator
       *          players should be initially slow, normal or fast.
       * @return Specificator of initial players speed (0: slow, 1: normal, 2: fast).
       */
-     public int InitialPlayersSpeed
+     public float InitialPlayersSpeed
      {
         set
         {

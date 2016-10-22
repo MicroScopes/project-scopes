@@ -2,272 +2,330 @@
 using System.Collections;
 using System.Collections.Generic;
 
-public class Player
+namespace ProjectScopes
 {
-	private Vector2 playerPos;
-	private Color playerColor;
+    public class Player : MonoBehaviour 
+    {
+        private Vector2 playerPos;
+        private Color playerColor;
 
-	private int playerSize;
-	private float playerSpeed;
+        private int playerSize;
+        private float playerSpeed;
 
-	private float playerDirection;
+        private float playerDirection;
 
-	private KeyCode keyLeft; 
-	private KeyCode keyRight;
+        private KeyCode keyLeft; 
+        private KeyCode keyRight;
 
-	private bool active;
-	private bool visible;
+        private int arenaSize;
 
-	private int holeDelay;
-	private int holeTimerDelay;
-	private int holeTimer;
-	private int holeSize;
+        private bool active;
+        private bool visible;
 
-	private GameObject playerHead;
-	private GameObject borderHead1;
-	private GameObject borderHead2;
-	private GameObject borderHead3;
+        private int holeDelay;
+        private int holeTimerDelay;
+        private int holeTimer;
+        private int holeSize;
 
-	public Player (GameObject head, GameObject bHead1, GameObject bHead2, GameObject bHead3)
-	{
-		playerPos = new Vector2(0.0f, 0.0f);
+        private GameObject borderHead;
+        private List<GameObject> borderHeads;
 
-		playerSize 		= 4;
-		playerSpeed 	= 1.0f;
-		playerDirection = 0.0f;
+        private float arenaScalar;
 
-		holeDelay = 0;
-		holeTimerDelay = 0;
-		holeTimer = 1000;
-		holeSize = 50;
+    	// Use this for initialization
+        void Awake () 
+        {
+            holeDelay = 0;
+            holeTimerDelay = 0;
+            holeTimer = 1000;
+            holeSize = 50;
 
-		active = true;
-		visible = true;
+            active = true;
+            visible = true;
 
-		playerColor = Color.white;
+            borderHeads = new List<GameObject>();
 
-		keyLeft = KeyCode.LeftArrow;
-		keyRight = KeyCode.RightArrow;
+            /*playerPos = new Vector2(0.0f, 0.0f);
 
-		playerHead = head;
-		borderHead1 = bHead1;
-		borderHead2 = bHead2;
-		borderHead3 = bHead3;
-	}
+            playerSize      = 4;
+            playerSpeed     = 1.0f;
+            playerDirection = 0.0f;
 
-	public void SetupPlayer(Vector2 startPos, float startDeg, int size, float speed, Color col)
-	{
-		playerPos = startPos;
+            playerColor = Color.white;
 
-		playerSize 		= size;
-		playerSpeed 	= speed;
-		playerDirection = startDeg;	
+            keyLeft = KeyCode.LeftArrow;
+            keyRight = KeyCode.RightArrow;*/
 
-		playerColor = col;
+            borderHead = Resources.Load("Prefabs/PlayerHead", typeof(GameObject)) as GameObject;
 
-		keyLeft = KeyCode.LeftArrow;
-		keyRight = KeyCode.RightArrow;
+            if (borderHead)
+            {
+                for (int i = 0; i < 3; i++)
+                {
+                    borderHeads.Add(Instantiate(borderHead));
+                }
+            }
+            else
+            {
+                Debug.LogError("PlayerHead prefab not found");
+            }
+    	}
+    	
+    	// Update is called once per frame
+    	/*void Update () {
+    	
+    	}*/
 
-		borderHead1.transform.position = new Vector3(-playerSize, -playerSize, 0.0f);
-		borderHead2.transform.position = new Vector3(-playerSize, -playerSize, 0.0f);
-		borderHead3.transform.position = new Vector3(-playerSize, -playerSize, 0.0f);
+        /*public void SetupPlayer(Vector2 startPos, float startDeg, int size, float speed, Color col)
+        {
+            playerPos = startPos;
 
-		MeshRenderer renderer = playerHead.GetComponent<MeshRenderer> ();
-		renderer.material.color = playerColor + new Color(0.5f, 0.5f, 0.5f);
+            playerSize      = size;
+            playerSpeed     = speed;
+            playerDirection = startDeg; 
 
-		renderer = borderHead1.GetComponent<MeshRenderer> ();
-		renderer.material.color = playerColor + new Color(0.5f, 0.5f, 0.5f);
-		renderer = borderHead2.GetComponent<MeshRenderer> ();
-		renderer.material.color = playerColor + new Color(0.5f, 0.5f, 0.5f);
-		renderer = borderHead3.GetComponent<MeshRenderer> ();
-		renderer.material.color = playerColor + new Color(0.5f, 0.5f, 0.5f);
-	}
+            playerColor = col;
 
-	public void Turn ()
-	{
-		if (active) 
-		{
-			int hSize = Mathf.CeilToInt((holeSize / playerSpeed) * playerSize);
+            keyLeft = KeyCode.LeftArrow;
+            keyRight = KeyCode.RightArrow;
+        }*/
+            
+        public void SetupPlayer(PlayerInitData playerData, int arenaInitSize)
+        {
+            arenaSize = arenaInitSize;
+            arenaScalar = 6.0f / (float)arenaSize;
 
-			if (Input.GetKey (keyLeft)) 
-			{
-				playerDirection -= 0.02f + playerSpeed * 0.002f;
-			}
-			if (Input.GetKey (keyRight)) 
-			{
-				playerDirection += 0.02f + playerSpeed * 0.002f;
-			}
+            playerPos = new Vector2(Random.Range(20.0f, arenaSize - 20),
+                                    Random.Range(20.0f, arenaSize - 20));
 
-			if (holeDelay < holeTimer)
-			{
-				holeDelay+=10;
-			}
-			else
-			{
-				visible = false;
-				if (holeTimerDelay < hSize)
-				{
-					holeTimerDelay+=10;
-				}
-				else
-				{
-					visible = true;
-					holeDelay = 0;
-					holeTimerDelay = 0;
-				}
-			}
+            playerSize = playerData.PlayerSize;
+            playerSpeed = playerData.PlayerSpeed;
+            playerDirection = Random.Range(0.0f, 2.0f); 
 
-			float headSize = playerSize * 0.02f;
+            playerColor = playerData.PlayerColor;
 
-			playerHead.transform.localScale = new Vector3 (headSize, headSize, headSize);
+            keyLeft = playerData.KeyLeft;
+            keyRight = playerData.KeyRight;
 
-			borderHead1.transform.localScale = new Vector3 (headSize, headSize, headSize);
-			borderHead2.transform.localScale = new Vector3 (headSize, headSize, headSize);
-			borderHead3.transform.localScale = new Vector3 (headSize, headSize, headSize);
-		}
-	}
+            MeshRenderer renderer;
 
-	public void MoveHead(float x, float y, int arenaSize)
-	{
-		int corner = 0;
+            this.transform.position = new Vector3(-1.0f, -1.0f, 0.0f);
+            renderer = this.GetComponent<MeshRenderer> ();
+            renderer.material.color = playerColor + new Color(0.5f, 0.5f, 0.5f);
 
-		playerHead.transform.position = new Vector3(x*0.01f, y*0.01f, 0.0f);
+            foreach (GameObject head in borderHeads)
+            {
+                head.transform.position = new Vector3(-1.0f, -1.0f, 0.0f);
+                renderer = head.GetComponent<MeshRenderer> ();
+                renderer.material.color = playerColor + new Color(0.5f, 0.5f, 0.5f);
+            }
+        }
 
-		borderHead1.transform.position = new Vector3(-playerSize, -playerSize, 0.0f);
-		borderHead2.transform.position = new Vector3(-playerSize, -playerSize, 0.0f);
-		borderHead3.transform.position = new Vector3(-playerSize, -playerSize, 0.0f);
+        public void Turn ()
+        {
+            if (active) 
+            {
+                int hSize = Mathf.CeilToInt((holeSize / playerSpeed) * playerSize);
 
-		if (y < playerSize) {
-			corner = 1;
-			borderHead1.transform.position = new Vector3 (x * 0.01f, (y + arenaSize) * 0.01f, 0.0f);
-		} if (y > arenaSize - playerSize) {
-			corner += 2;
-			borderHead1.transform.position = new Vector3 (x * 0.01f, (y - arenaSize) * 0.01f, 0.0f);
-		} if (x < playerSize) {
-			corner += 4;
-			borderHead1.transform.position = new Vector3 ((x + arenaSize) * 0.01f, y * 0.01f, 0.0f);
-		} if (x > arenaSize - playerSize) {
-			corner += 8;
-			borderHead1.transform.position = new Vector3 ((x - arenaSize) * 0.01f, y * 0.01f, 0.0f);
-		}
+                if (Input.GetKey (keyLeft)) 
+                {
+                    playerDirection -= 0.02f + playerSpeed * 0.002f;
+                }
+                if (Input.GetKey (keyRight)) 
+                {
+                    playerDirection += 0.02f + playerSpeed * 0.002f;
+                }
 
-		switch (corner) {
-		case 5:
-			borderHead1.transform.position = new Vector3 (x * 0.01f, (y + arenaSize) * 0.01f, 0.0f);
-			borderHead2.transform.position = new Vector3 ((x + arenaSize) * 0.01f, (y + arenaSize) * 0.01f, 0.0f);
-			borderHead3.transform.position = new Vector3 ((x + arenaSize) * 0.01f, y * 0.01f, 0.0f);
-			break;
-		case 6:
-			borderHead1.transform.position = new Vector3 (x * 0.01f, (y - arenaSize) * 0.01f, 0.0f);
-			borderHead2.transform.position = new Vector3 ((x + arenaSize) * 0.01f, (y - arenaSize) * 0.01f, 0.0f);
-			borderHead3.transform.position = new Vector3 ((x + arenaSize) * 0.01f, y * 0.01f, 0.0f);
-			break;
-		case 9:
-			borderHead1.transform.position = new Vector3 (x * 0.01f, (y + arenaSize) * 0.01f, 0.0f);
-			borderHead2.transform.position = new Vector3 ((x - arenaSize) * 0.01f, (y + arenaSize) * 0.01f, 0.0f);
-			borderHead3.transform.position = new Vector3 ((x - arenaSize) * 0.01f, y * 0.01f, 0.0f);
-			break;			
-		case 10:
-			borderHead1.transform.position = new Vector3 (x * 0.01f, (y - arenaSize) * 0.01f, 0.0f);
-			borderHead2.transform.position = new Vector3 ((x - arenaSize) * 0.01f, (y - arenaSize) * 0.01f, 0.0f);
-			borderHead3.transform.position = new Vector3 ((x - arenaSize) * 0.01f, y * 0.01f, 0.0f);
-			break;
-		}
-	}
+                if (holeDelay < holeTimer)
+                {
+                    holeDelay+=10;
+                }
+                else
+                {
+                    visible = false;
+                    if (holeTimerDelay < hSize)
+                    {
+                        holeTimerDelay+=10;
+                    }
+                    else
+                    {
+                        visible = true;
+                        holeDelay = 0;
+                        holeTimerDelay = 0;
+                    }
+                }
 
-	public float PosX
-	{
-		get { return playerPos.x; }
-		set { playerPos.x = value; }
-	}
+                float headSize = playerSize * 0.02f;
 
-	public float PosY
-	{
-		get { return playerPos.y; }
-		set { playerPos.y = value; }
-	}
+                this.transform.localScale = new Vector3 (headSize, headSize, headSize);
 
-	public float PlayerSpeed
-	{
-		get { return playerSpeed; }
-	}
+                foreach (GameObject head in borderHeads)
+                {
+                    head.transform.localScale = new Vector3 (headSize, headSize, headSize);
+                }
 
-	public int PlayerSize
-	{
-		get { return playerSize; }
-	}
+                MoveHead();
+            }
+        }
 
-	public float PlayerDirection
-	{
-		get { return playerDirection; }
-	}
+        public void MoveHead()
+        {
+            int corner = 0;
 
-	public void IncreaseSpeed ()
-	{
-		if (playerSpeed <= 8) {
-			playerSpeed *= 2;
-		}
-	}
+            this.transform.position = new Vector3(playerPos.x*arenaScalar, playerPos.y*arenaScalar, 0.0f);
 
-	public void ReduceSpeed ()
-	{
-		if (playerSpeed > 0.25f) {
-			playerSpeed /= 2.0f;
-		}
-	}
+            foreach (GameObject head in borderHeads)
+            {
+                head.transform.position = new Vector3(-1.0f, -1.0f, 0.0f);
+            }
 
-	public Color PlayerColor
-	{
-		get { return playerColor; }
-		set 
-		{ 
-			playerColor = value;
+            if (playerPos.y < playerSize) {
+                corner = 1;
+                borderHeads[0].transform.position = new Vector3 (playerPos.x * arenaScalar, (playerPos.y + arenaSize) * arenaScalar, 0.0f);
+            } if (playerPos.y > arenaSize - playerSize) {
+                corner += 2;
+                borderHeads[0].transform.position = new Vector3 (playerPos.x * arenaScalar, (playerPos.y - arenaSize) * arenaScalar, 0.0f);
+            } if (playerPos.x < playerSize) {
+                corner += 4;
+                borderHeads[0].transform.position = new Vector3 ((playerPos.x + arenaSize) * arenaScalar, playerPos.y * arenaScalar, 0.0f);
+            } if (playerPos.x > arenaSize - playerSize) {
+                corner += 8;
+                borderHeads[0].transform.position = new Vector3 ((playerPos.x - arenaSize) * arenaScalar, playerPos.y * arenaScalar, 0.0f);
+            }
 
-			MeshRenderer renderer = playerHead.GetComponent<MeshRenderer> ();
-			renderer.material.color = playerColor + new Color(0.5f, 0.5f, 0.5f);
+            switch (corner) 
+            {
+                case 5:
+                    borderHeads[0].transform.position = new Vector3 (playerPos.x * arenaScalar, (playerPos.y + arenaSize) * arenaScalar, 0.0f);
+                    borderHeads[1].transform.position = new Vector3 ((playerPos.x + arenaSize) * arenaScalar, (playerPos.y + arenaSize) * arenaScalar, 0.0f);
+                    borderHeads[2].transform.position = new Vector3 ((playerPos.x + arenaSize) * arenaScalar, playerPos.y * arenaScalar, 0.0f);
+                    break;
+                case 6:
+                    borderHeads[0].transform.position = new Vector3 (playerPos.x * arenaScalar, (playerPos.y - arenaSize) * arenaScalar, 0.0f);
+                    borderHeads[1].transform.position = new Vector3 ((playerPos.x + arenaSize) * arenaScalar, (playerPos.y - arenaSize) * arenaScalar, 0.0f);
+                    borderHeads[2].transform.position = new Vector3 ((playerPos.x + arenaSize) * arenaScalar, playerPos.y * arenaScalar, 0.0f);
+                    break;
+                case 9:
+                    borderHeads[0].transform.position = new Vector3 (playerPos.x * arenaScalar, (playerPos.y + arenaSize) * arenaScalar, 0.0f);
+                    borderHeads[1].transform.position = new Vector3 ((playerPos.x - arenaSize) * arenaScalar, (playerPos.y + arenaSize) * arenaScalar, 0.0f);
+                    borderHeads[2].transform.position = new Vector3 ((playerPos.x - arenaSize) * arenaScalar, playerPos.y * arenaScalar, 0.0f);
+                    break;          
+                case 10:
+                    borderHeads[0].transform.position = new Vector3 (playerPos.x * arenaScalar, (playerPos.y - arenaSize) * arenaScalar, 0.0f);
+                    borderHeads[1].transform.position = new Vector3 ((playerPos.x - arenaSize) * arenaScalar, (playerPos.y - arenaSize) * arenaScalar, 0.0f);
+                    borderHeads[2].transform.position = new Vector3 ((playerPos.x - arenaSize) * arenaScalar, playerPos.y * arenaScalar, 0.0f);
+                    break;
+            }    
+        }
 
-			renderer = borderHead1.GetComponent<MeshRenderer> ();
-			renderer.material.color = playerColor + new Color(0.5f, 0.5f, 0.5f);
-			renderer = borderHead2.GetComponent<MeshRenderer> ();
-			renderer.material.color = playerColor + new Color(0.5f, 0.5f, 0.5f);
-			renderer = borderHead3.GetComponent<MeshRenderer> ();
-			renderer.material.color = playerColor + new Color(0.5f, 0.5f, 0.5f);
-		}
-	}
+        public float PosX
+        {
+            get { return playerPos.x; }
+            set 
+            { 
+                //playerPos.x = value;
 
-	public void DoubleSize()
-	{
-		if (playerSize < 4) {
-			playerSize += 1;
-		}
-		else if (playerSize >= 4 && playerSize <= 20) {
-			playerSize += 4;
-		}
-	}
+                if (value < 0)
+                {
+                    playerPos.x = (arenaSize + value) % arenaSize;
+                }
+                else
+                {
+                    playerPos.x = value % arenaSize;
+                }
+            }
+        }
 
-	public void ReduceSize()
-	{
-		if (playerSize > 4) {
-			playerSize -= 4;
-		} else if (playerSize > 2 && playerSize <= 4) {
-			playerSize -= 1;
-		}
-	}
+        public float PosY
+        {
+            get { return playerPos.y; }
+            set 
+            { 
+                //playerPos.y = value;
 
-	public void SetControlKeys(KeyCode keyL, KeyCode keyR)
-	{
-		keyLeft = keyL;
-		keyRight = keyR;
-	}
+                if (value < 0)
+                {
+                    playerPos.y = (arenaSize + value) % arenaSize;
+                }
+                else
+                {
+                    playerPos.y = value % arenaSize;
+                }
+            }
+        }
 
-	public bool IsActive
-	{
-		get { return active; }
-		set { active = value; }
-	}
+        public float PlayerSpeed
+        {
+            get { return playerSpeed; }
+        }
 
-	public bool isVisible()
-	{
-		return visible;
-	}
+        public int PlayerSize
+        {
+            get { return playerSize; }
+        }
+
+        public float PlayerDirection
+        {
+            get { return playerDirection; }
+        }
+
+        public void IncreaseSpeed ()
+        {
+            if (playerSpeed <= 8) {
+                playerSpeed *= 2;
+            }
+        }
+
+        public void ReduceSpeed ()
+        {
+            if (playerSpeed > 0.25f) {
+                playerSpeed /= 2.0f;
+            }
+        }
+
+        public Color PlayerColor
+        {
+            get { return playerColor; }
+            //set 
+            //{ 
+            //    playerColor = value;
+            //}
+        }
+
+        public void DoubleSize()
+        {
+            if (playerSize < 5) {
+                playerSize += 1;
+            }
+            else if (playerSize >= 5 && playerSize <= 20) {
+                playerSize += 5;
+            }
+        }
+
+        public void ReduceSize()
+        {
+            if (playerSize > 5) {
+                playerSize -= 5;
+            } else if (playerSize > 2 && playerSize <= 5) {
+                playerSize -= 1;
+            }
+        }
+
+        /*public void SetControlKeys(KeyCode keyL, KeyCode keyR)
+        {
+            keyLeft = keyL;
+            keyRight = keyR;
+        }*/
+
+        public bool IsActive
+        {
+            get { return active; }
+            set { active = value; }
+        }
+
+        public bool IsVisible()
+        {
+            return visible;
+        }
+    }
 }
