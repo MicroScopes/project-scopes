@@ -69,7 +69,7 @@ namespace ProjectScopes
         {
             arenaSize = arenaInitSize;
             arenaScalar = 6.0f / arenaInitSize;
-            angleScalar = 0.015f + playerData.PlayerSpeed * 0.002f;
+            angleScalar = 0.015f;
 
             playerPos = new Vector2(Random.Range(20.0f, arenaInitSize - 20),
                                     Random.Range(20.0f, arenaInitSize - 20));
@@ -105,11 +105,11 @@ namespace ProjectScopes
 
                 if (Input.GetKey (keyLeft)) 
                 {
-                    playerDirection -= angleScalar;
+                    playerDirection -= angleScalar + (playerSpeed - 1.0f) * 0.004f;
                 }
                 if (Input.GetKey (keyRight)) 
                 {
-                    playerDirection += angleScalar;
+                    playerDirection += angleScalar + (playerSpeed - 1.0f) * 0.004f;
                 }
 
                 if (holeDelay < holeTimer)
@@ -140,7 +140,7 @@ namespace ProjectScopes
                     head.transform.localScale = new Vector3 (headSize, headSize, headSize);
                 }
 
-                MoveHead();
+                //MoveHead();
             }
         }
 
@@ -280,12 +280,6 @@ namespace ProjectScopes
                 playerSize -= 1;
             }
         }
-
-        /*public void SetControlKeys(KeyCode keyL, KeyCode keyR)
-        {
-            keyLeft = keyL;
-            keyRight = keyR;
-        }*/
 
         public bool IsActive
         {

@@ -64,7 +64,7 @@ public class Configurator
         public Configurator()
         {
             currentNoOfPlayers = 2;
-            initialArenaSize = 800;
+            initialArenaSize = 600;
             initialPlayersSize = 6;
             initialPlayersSpeed = 2.0f;
 

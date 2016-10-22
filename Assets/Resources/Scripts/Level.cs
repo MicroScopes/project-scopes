@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
-using System.Collections.Generic;   // List
+using System.Collections.Generic;
 
 namespace ProjectScopes
 { 
@@ -34,14 +34,34 @@ namespace ProjectScopes
             }
         }
 
-        public void MovePlayers(List<Player> players)
+        public void MovePlayers()
         {
-            foreach (Player player in players) 
+            bool end = true;
+
+            foreach (Player player in GameManager.instance.players) 
             {
                 player.Turn ();
+
+                if (player.IsActive)
+                {
+                    end = false;
+                }
             }
 
-            arena.RedrawArena(players);
+            arena.RedrawArena();
+
+            if (end)
+            {
+                Invoke("Restart", 1.0f);
+                GameManager.instance.enabled = false;
+            }
+        }
+
+        //Restart reloads the scene when called.
+        private void Restart ()
+        {
+            //Load the last scene loaded, in this case Main, the only scene in the game.
+            Application.LoadLevel (Application.loadedLevel);
         }
     }
 

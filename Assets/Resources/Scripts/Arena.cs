@@ -24,9 +24,9 @@ namespace ProjectScopes
             
     	}
 
-        public void RedrawArena (List<Player> players)
+        public void RedrawArena ()
     	{
-            DrawPlayers (players);
+            DrawPlayers (GameManager.instance.players);
 
     		mainTexture.SetPixels (mianPixMap);
     		mainTexture.Apply (false);
@@ -35,7 +35,6 @@ namespace ProjectScopes
 
         public void SetupArena(int arenaInitSize)
         {
-            //players = playersList;
             arenaSize = arenaInitSize;
 
             mainTexture = new Texture2D (arenaSize,arenaSize);
@@ -102,6 +101,8 @@ namespace ProjectScopes
 
     			player.PosX = playerPosX;
     			player.PosY = playerPosY;
+
+                player.MoveHead();
     		}
     	}
 

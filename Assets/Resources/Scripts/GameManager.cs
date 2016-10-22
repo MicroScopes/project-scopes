@@ -28,9 +28,9 @@ namespace ProjectScopes
 //==================================================
 
 /*!
- * @brief
+ * @brief 
  * 
- * @details
+ * @details 
  *
  *
  */
@@ -39,10 +39,11 @@ namespace ProjectScopes
 	{
 		public static GameManager instance = null;
 
-		private Configurator gameConfiguration;
+		private static Configurator gameConfiguration;
         private Level level;
         public List<Player> players;
 
+        // Variables used for simple frame rate control
         private float frameRate;
         private float nextFrame;
 
@@ -58,45 +59,57 @@ namespace ProjectScopes
 				Destroy(gameObject);    
 			}
 
-			//Sets this to not be destroyed when reloading scene
-			//DontDestroyOnLoad(gameObject);
+            // Sets GameManager to not be destroyed when reloading scene
+			DontDestroyOnLoad(gameObject);
 
-            //Get a component reference to the attached Level script
+            // Component reference to the attached Level script
             level = GetComponent<Level>();
-
-            // to remove
-            gameConfiguration = new Configurator();
-
 
             frameRate = 0.01f;
             nextFrame = 0.0f;
-
-            LoadPlayers();
-
-            StartLevel();
 		}
+
+/*!
+ * @brief 
+ * 
+ * @details 
+ *
+ */
+        void Start()
+        {
+            StartLevel();
+        }
 		
 
         //This is called each time a scene is loaded.
-        void OnLevelWasLoaded(int index)
+        void OnLevelWasLoaded()
         {
             //Call StartLevel to initialize next level.
             StartLevel();
         }
 
-        private void StartLevel ()
+        private void StartLevel()
         {
+            this.enabled = true;
+                
+            LoadPlayers();
+
             level.SetupLevel(gameConfiguration);
         }
 
         private void LoadPlayers()
         {
+            players = new List<Player>();
+
             Player player = Resources.Load("Prefabs/Player", typeof(Player)) as Player;
+
+            Debug.Log("PlayerLoad");
 
             if (player)
             {
                 foreach (PlayerInitData playerData in gameConfiguration.Players)
                 {
+                    Debug.Log("Player loading");
                     players.Add(Instantiate(player));
                     players[players.Count - 1].SetupPlayer(playerData, gameConfiguration.InitialArenaSize);
                 }
@@ -114,7 +127,7 @@ namespace ProjectScopes
             {
                 nextFrame = Time.time + frameRate;
 
-                level.MovePlayers(players);
+                level.MovePlayers();
             }
 
 
@@ -156,6 +169,11 @@ namespace ProjectScopes
 			set
 			{
 				gameConfiguration = value;
+
+                if (!this.enabled)
+                {
+                    this.enabled = true;
+                }
 			}
 			get
 			{
