@@ -31,6 +31,7 @@ namespace ProjectScopes
         private List<GameObject> borderHeads;
 
         private float arenaScalar;
+        private float angleScalar;
 
     	// Use this for initialization
         void Awake () 
@@ -41,21 +42,9 @@ namespace ProjectScopes
             holeSize = 50;
 
             active = true;
-            visible = true;
+            visible = false; //true;
 
             borderHeads = new List<GameObject>();
-
-            /*playerPos = new Vector2(0.0f, 0.0f);
-
-            playerSize      = 4;
-            playerSpeed     = 1.0f;
-            playerDirection = 0.0f;
-
-            playerColor = Color.white;
-
-            keyLeft = KeyCode.LeftArrow;
-            keyRight = KeyCode.RightArrow;*/
-
             borderHead = Resources.Load("Prefabs/PlayerHead", typeof(GameObject)) as GameObject;
 
             if (borderHead)
@@ -75,28 +64,15 @@ namespace ProjectScopes
     	/*void Update () {
     	
     	}*/
-
-        /*public void SetupPlayer(Vector2 startPos, float startDeg, int size, float speed, Color col)
-        {
-            playerPos = startPos;
-
-            playerSize      = size;
-            playerSpeed     = speed;
-            playerDirection = startDeg; 
-
-            playerColor = col;
-
-            keyLeft = KeyCode.LeftArrow;
-            keyRight = KeyCode.RightArrow;
-        }*/
             
         public void SetupPlayer(PlayerInitData playerData, int arenaInitSize)
         {
             arenaSize = arenaInitSize;
-            arenaScalar = 6.0f / (float)arenaSize;
+            arenaScalar = 6.0f / arenaInitSize;
+            angleScalar = 0.015f + playerData.PlayerSpeed * 0.002f;
 
-            playerPos = new Vector2(Random.Range(20.0f, arenaSize - 20),
-                                    Random.Range(20.0f, arenaSize - 20));
+            playerPos = new Vector2(Random.Range(20.0f, arenaInitSize - 20),
+                                    Random.Range(20.0f, arenaInitSize - 20));
 
             playerSize = playerData.PlayerSize;
             playerSpeed = playerData.PlayerSpeed;
@@ -111,13 +87,13 @@ namespace ProjectScopes
 
             this.transform.position = new Vector3(-1.0f, -1.0f, 0.0f);
             renderer = this.GetComponent<MeshRenderer> ();
-            renderer.material.color = playerColor + new Color(0.5f, 0.5f, 0.5f);
+            renderer.material.color = playerData.PlayerColor + new Color(0.5f, 0.5f, 0.5f);
 
             foreach (GameObject head in borderHeads)
             {
                 head.transform.position = new Vector3(-1.0f, -1.0f, 0.0f);
                 renderer = head.GetComponent<MeshRenderer> ();
-                renderer.material.color = playerColor + new Color(0.5f, 0.5f, 0.5f);
+                renderer.material.color = playerData.PlayerColor + new Color(0.5f, 0.5f, 0.5f);
             }
         }
 
@@ -129,11 +105,11 @@ namespace ProjectScopes
 
                 if (Input.GetKey (keyLeft)) 
                 {
-                    playerDirection -= 0.02f + playerSpeed * 0.002f;
+                    playerDirection -= angleScalar;
                 }
                 if (Input.GetKey (keyRight)) 
                 {
-                    playerDirection += 0.02f + playerSpeed * 0.002f;
+                    playerDirection += angleScalar;
                 }
 
                 if (holeDelay < holeTimer)
@@ -155,7 +131,7 @@ namespace ProjectScopes
                     }
                 }
 
-                float headSize = playerSize * 0.02f;
+                float headSize = 2 * arenaScalar * playerSize;
 
                 this.transform.localScale = new Vector3 (headSize, headSize, headSize);
 
@@ -241,8 +217,6 @@ namespace ProjectScopes
             get { return playerPos.y; }
             set 
             { 
-                //playerPos.y = value;
-
                 if (value < 0)
                 {
                     playerPos.y = (arenaSize + value) % arenaSize;
@@ -286,27 +260,23 @@ namespace ProjectScopes
         public Color PlayerColor
         {
             get { return playerColor; }
-            //set 
-            //{ 
-            //    playerColor = value;
-            //}
         }
 
         public void DoubleSize()
         {
-            if (playerSize < 5) {
+            if (playerSize < 6) {
                 playerSize += 1;
             }
-            else if (playerSize >= 5 && playerSize <= 20) {
-                playerSize += 5;
+            else if (playerSize >= 6 && playerSize <= 24) {
+                playerSize += 6;
             }
         }
 
         public void ReduceSize()
         {
-            if (playerSize > 5) {
-                playerSize -= 5;
-            } else if (playerSize > 2 && playerSize <= 5) {
+            if (playerSize > 6) {
+                playerSize -= 6;
+            } else if (playerSize > 2 && playerSize <= 6) {
                 playerSize -= 1;
             }
         }

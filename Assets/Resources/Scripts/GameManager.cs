@@ -42,7 +42,6 @@ namespace ProjectScopes
 		private Configurator gameConfiguration;
         private Level level;
         public List<Player> players;
-        public Arena arena;
 
         private float frameRate;
         private float nextFrame;
@@ -66,17 +65,15 @@ namespace ProjectScopes
             level = GetComponent<Level>();
 
             // to remove
-            TempTestConfiguration();
+            gameConfiguration = new Configurator();
 
 
             frameRate = 0.01f;
             nextFrame = 0.0f;
 
-            players = new List<Player>();
+            LoadPlayers();
 
-            Setup();
-
-			StartLevel();
+            StartLevel();
 		}
 		
 
@@ -92,6 +89,24 @@ namespace ProjectScopes
             level.SetupLevel(gameConfiguration);
         }
 
+        private void LoadPlayers()
+        {
+            Player player = Resources.Load("Prefabs/Player", typeof(Player)) as Player;
+
+            if (player)
+            {
+                foreach (PlayerInitData playerData in gameConfiguration.Players)
+                {
+                    players.Add(Instantiate(player));
+                    players[players.Count - 1].SetupPlayer(playerData, gameConfiguration.InitialArenaSize);
+                }
+            }
+            else
+            {
+                Debug.LogError("Player prefab not found");
+            }
+        }
+
 		// Update is called once per frame
 		void Update () 
         {
@@ -99,8 +114,9 @@ namespace ProjectScopes
             {
                 nextFrame = Time.time + frameRate;
 
-                level.MovePlayers();
+                level.MovePlayers(players);
             }
+
 
             if(Input.GetKeyDown(KeyCode.G))
             {
@@ -146,50 +162,6 @@ namespace ProjectScopes
 				return gameConfiguration;
 			}
 		}
-
-
-        private void Setup()
-        {
-            Player player = Resources.Load("Prefabs/Player", typeof(Player)) as Player;
-
-            if (player)
-            {
-                foreach (PlayerInitData playerData in gameConfiguration.Players)
-                {
-                    //player.SetupPlayer(playerData, gameConfiguration.InitialArenaSize);
-                    players.Add(Instantiate(player));
-                    players[players.Count - 1].SetupPlayer(playerData, gameConfiguration.InitialArenaSize);
-                }
-            }
-            else
-            {
-                Debug.LogError("Player prefab not found");
-            }
-
-            arena = Resources.Load("Prefabs/Arena", typeof(Arena)) as Arena;
-
-            if (arena)
-            {
-                //arena.SetupArena(gameConfiguration.InitialArenaSize);
-                Instantiate(arena);
-                arena.SetupArena(gameConfiguration.InitialArenaSize);
-            }
-            else
-            {
-                Debug.LogError("Arena prefab not found");
-            }
-        }
-
-        // to remove
-        private void TempTestConfiguration()
-        {
-            gameConfiguration = new Configurator();
-
-            /*gameConfiguration.CurrentNoOfPlayers = 2;
-            gameConfiguration.InitialArenaSize = 600;
-            gameConfiguration.InitialPlayersSize = 5;
-            gameConfiguration.InitialPlayersSpeed = 2.0f;*/
-        }
 	}
 
 }

@@ -1,49 +1,51 @@
 ﻿using UnityEngine;
-//using System.Collections;
 
-public class PlayerInitData 
+namespace ProjectScopes
 {
-    private Color playerColor;
-
-    private int playerSize;
-    private float playerSpeed;
-
-    private KeyCode keyLeft; 
-    private KeyCode keyRight;
-
-	// Use this for initialization
-    public PlayerInitData (int size, float speed, Color col, KeyCode keyL, KeyCode keyR) 
+    public class PlayerInitData 
     {
-        playerSize = size;
-        playerSpeed = speed;
-        playerColor = col;
+        private Color playerColor;
 
-        keyLeft = keyL;
-        keyRight = keyR;
-	}
+        private int playerSize;
+        private float playerSpeed;
 
-    public float PlayerSpeed
-    {
-        get { return playerSpeed; }
-    }
+        private KeyCode keyLeft; 
+        private KeyCode keyRight;
 
-    public int PlayerSize
-    {
-        get { return playerSize; }
-    }
+    	// Use this for initialization
+        public PlayerInitData (int size, float speed, Color col, KeyCode keyL, KeyCode keyR) 
+        {
+            playerSize = size;
+            playerSpeed = speed;
+            playerColor = col;
 
-    public Color PlayerColor
-    {
-        get { return playerColor; }
-    }
+            keyLeft = keyL;
+            keyRight = keyR;
+    	}
 
-    public KeyCode KeyLeft
-    {
-        get { return keyLeft; }
-    }
+        public float PlayerSpeed
+        {
+            get { return playerSpeed; }
+        }
 
-    public KeyCode KeyRight
-    {
-        get { return keyRight; }
+        public int PlayerSize
+        {
+            get { return playerSize; }
+        }
+
+        public Color PlayerColor
+        {
+            get { return playerColor; }
+        }
+
+        public KeyCode KeyLeft
+        {
+            get { return keyLeft; }
+        }
+
+        public KeyCode KeyRight
+        {
+            get { return keyRight; }
+        }
     }
 }

@@ -18,114 +18,15 @@ namespace ProjectScopes
 
     	private int arenaSize;
 
-    	//private float frameRate;
-    	//private float nextFrame;
-
-    	//private int initSize = 4;
-    	//private float initSpeed = 2.0f;
-
-    	//private int noOfPlayers = 2;
-    	//private List<Player> players;
-
-
     	// Use this for initialization
         void Awake() 
         {
-            //players = new List<Player>();
-
-    		//frameRate 		= 0.01f;
-    		//arenaSize 		= 600;
-
-    		/*mainTexture = new Texture2D (arenaSize,arenaSize);
-    		mianPixMap 	= mainTexture.GetPixels ();
-
-    		mainTexture.filterMode = FilterMode.Trilinear;
-
-    		// Setting texture to Arena renderer
-    		MeshRenderer renderer = GetComponent<MeshRenderer> ();
-    		renderer.materials[0].mainTexture = mainTexture;
-
-    		// Setting Arena background color
-    		SetArenaBgColor (Color.black);*/
-
-    		/*for (int i = 0; i < noOfPlayers; i++) {
-    			players.Add (new Player (Instantiate(head), Instantiate(head), Instantiate(head), Instantiate(head)));
-    		}
-
-    		foreach (Player player in players) {
-    			player.SetupPlayer(new Vector2 (Random.Range(20.0f, arenaSize-20), 
-    											Random.Range(20.0f, arenaSize-20)), 
-    											Random.Range(0.0f, 2.0f), 
-    											initSize, 
-    											initSpeed, 
-    											Color.red);
-    		}
-
-    		players [1].PlayerColor = Color.green;
-    		players [1].SetControlKeys (KeyCode.Z, KeyCode.X);*/
+            
     	}
 
-
-    	// Update is called once per frame
-    	/*void Update () 
+        public void RedrawArena (List<Player> players)
     	{
-    		if (Time.time > nextFrame) 
-    		{
-    			nextFrame = Time.time + frameRate;
-
-    			foreach (Player player in players) 
-    			{
-    				player.Turn ();
-    			}
-    				
-    			RedrawArena ();
-    		}
-
-    		if(Input.GetKeyDown(KeyCode.G))
-    		{
-    			foreach (Player player in players) 
-    			{
-    				player.DoubleSize ();
-    			}
-    		}
-
-    		if(Input.GetKeyDown(KeyCode.H))//
-    		{
-    			foreach (Player player in players) 
-    			{
-    				player.ReduceSize ();
-    			}
-    		}
-
-    		if(Input.GetKeyDown(KeyCode.J))
-    		{
-    			foreach (Player player in players) 
-    			{
-    				player.IncreaseSpeed ();
-    			}
-    		}
-
-    		if(Input.GetKeyDown(KeyCode.K))
-    		{
-    			foreach (Player player in players) 
-    			{
-    				player.ReduceSpeed ();
-    			}
-    		}
-
-    		// helpful for getting KeyCode of pressed key (to set preferred keys for players in GUI)
-
-    		foreach(KeyCode kcode in System.Enum.GetValues(typeof(KeyCode)))
-    		{
-    			if (Input.GetKeyDown(kcode))
-    				Debug.Log("KeyCode down: " + kcode);
-    		}
-    	}*/
-
-
-    	public void RedrawArena ()
-    	{
-    		DrawPlayers ();
+            DrawPlayers (players);
 
     		mainTexture.SetPixels (mianPixMap);
     		mainTexture.Apply (false);
@@ -144,16 +45,16 @@ namespace ProjectScopes
 
             // Setting texture to Arena renderer
             MeshRenderer renderer = GetComponent<MeshRenderer> ();
-            //renderer.materials[0].mainTexture = mainTexture;
             renderer.sharedMaterial.mainTexture = mainTexture;
+
             // Setting Arena background color
             SetArenaBgColor (Color.black);
         }
 
 
-    	void DrawPlayers ()
+        void DrawPlayers (List<Player> players)
     	{
-            foreach (Player player in GameManager.instance.players)
+            foreach (Player player in players)
     		{
     			float playerPosX = player.PosX;
     			float playerPosY = player.PosY;
@@ -199,23 +100,8 @@ namespace ProjectScopes
     				}
     			}
 
-    			/*playerPosX %= arenaSize;
-    			playerPosY %= arenaSize;
-
-    			if (playerPosX < 0) 
-    			{
-    				playerPosX = (arenaSize + playerPosX) % arenaSize;
-    			}
-
-    			if (playerPosY < 0) 
-    			{
-    				playerPosY = (arenaSize + playerPosY) % arenaSize;
-    			}*/
-
     			player.PosX = playerPosX;
     			player.PosY = playerPosY;
-
-    			//player.MoveHead (playerPosX + sinDegree, playerPosY + cosDegree, arenaSize);
     		}
     	}
 
