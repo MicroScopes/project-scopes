@@ -19,14 +19,14 @@ namespace ProjectScopes
     	
     	}*/
 
-        public void SetupLevel(Configurator gameConf)
+        public void SetupLevel(int arenaInitSize)
         {
             arena = Resources.Load("Prefabs/Arena", typeof(Arena)) as Arena;
 
             if (arena)
             {
                 Instantiate(arena);
-                arena.SetupArena(gameConf.InitialArenaSize);
+                arena.SetupArena();
             }
             else
             {
@@ -52,7 +52,7 @@ namespace ProjectScopes
 
             if (end)
             {
-                Invoke("Restart", 1.0f);
+                Invoke("Restart", 1.5f);
                 GameManager.instance.enabled = false;
             }
         }

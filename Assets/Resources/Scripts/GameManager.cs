@@ -28,11 +28,11 @@ namespace ProjectScopes
 //==================================================
 
 /*!
- * @brief 
+ * @brief Main manager of the game
  * 
- * @details 
- *
- *
+ * @details GameManager class is based on singleton pattern and contains players list
+ *          and initial game configuration. It is set by default to disable until it gets
+ *          initial configuration and players data from GUI.
  */
 
 	public class GameManager : MonoBehaviour 
@@ -69,12 +69,7 @@ namespace ProjectScopes
             nextFrame = 0.0f;
 		}
 
-/*!
- * @brief 
- * 
- * @details 
- *
- */
+        // Called after enabling game manager
         void Start()
         {
             StartLevel();
@@ -94,7 +89,7 @@ namespace ProjectScopes
                 
             LoadPlayers();
 
-            level.SetupLevel(gameConfiguration);
+            level.SetupLevel(GameConfiguration.InitialArenaSize);
         }
 
         private void LoadPlayers()
@@ -103,13 +98,10 @@ namespace ProjectScopes
 
             Player player = Resources.Load("Prefabs/Player", typeof(Player)) as Player;
 
-            Debug.Log("PlayerLoad");
-
             if (player)
             {
                 foreach (PlayerInitData playerData in gameConfiguration.Players)
                 {
-                    Debug.Log("Player loading");
                     players.Add(Instantiate(player));
                     players[players.Count - 1].SetupPlayer(playerData, gameConfiguration.InitialArenaSize);
                 }

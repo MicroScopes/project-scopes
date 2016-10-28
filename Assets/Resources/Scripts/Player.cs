@@ -105,11 +105,11 @@ namespace ProjectScopes
 
                 if (Input.GetKey (keyLeft)) 
                 {
-                    playerDirection -= angleScalar + (playerSpeed - 1.0f) * 0.004f;
+                    playerDirection += angleScalar + (playerSpeed - 1.0f) * 0.004f;
                 }
                 if (Input.GetKey (keyRight)) 
                 {
-                    playerDirection += angleScalar + (playerSpeed - 1.0f) * 0.004f;
+                    playerDirection -= angleScalar + (playerSpeed - 1.0f) * 0.004f;
                 }
 
                 if (holeDelay < holeTimer)
@@ -199,8 +199,6 @@ namespace ProjectScopes
             get { return playerPos.x; }
             set 
             { 
-                //playerPos.x = value;
-
                 if (value < 0)
                 {
                     playerPos.x = (arenaSize + value) % arenaSize;

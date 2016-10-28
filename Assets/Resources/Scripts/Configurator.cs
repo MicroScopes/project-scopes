@@ -64,12 +64,12 @@ public class Configurator
         public Configurator()
         {
             currentNoOfPlayers = 2;
-            initialArenaSize = 600;
+            initialArenaSize = 800;
             initialPlayersSize = 6;
             initialPlayersSpeed = 2.0f;
 
             Players.Add (new PlayerInitData (initialPlayersSize, initialPlayersSpeed, Color.red, KeyCode.LeftArrow, KeyCode.RightArrow));
-            Players.Add (new PlayerInitData (initialPlayersSize, initialPlayersSpeed, Color.green, KeyCode.Z, KeyCode.X));
+            //Players.Add (new PlayerInitData (initialPlayersSize, initialPlayersSpeed, Color.green, KeyCode.Z, KeyCode.X));
             //Players.Add (new PlayerInitData (5, 2.0f, Color.blue, KeyCode.B, KeyCode.N));
         }
        
