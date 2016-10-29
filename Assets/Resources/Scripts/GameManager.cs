@@ -38,10 +38,10 @@ namespace ProjectScopes
 	public class GameManager : MonoBehaviour 
 	{
 		public static GameManager instance = null;
+        public List<Player> players;
 
 		private static Configurator gameConfiguration;
         private Level level;
-        public List<Player> players;
 
         // Variables used for simple frame rate control
         private float frameRate;
@@ -53,17 +53,20 @@ namespace ProjectScopes
 			if (instance == null)
 			{
 				instance = this;
+
+                // Component reference to the attached Level script
+                level = GetComponent<Level>();
+
+                // Creates a default set of 6 inactive players
+                LoadPlayers();
+
+                // Object will not be destroyed after scene reload
+                DontDestroyOnLoad(gameObject);
 			}
 			else if (instance != this)
 			{
-				Destroy(gameObject);    
+                Destroy(gameObject);    
 			}
-
-            // Sets GameManager to not be destroyed when reloading scene
-			DontDestroyOnLoad(gameObject);
-
-            // Component reference to the attached Level script
-            level = GetComponent<Level>();
 
             frameRate = 0.01f;
             nextFrame = 0.0f;
@@ -72,38 +75,28 @@ namespace ProjectScopes
         // Called after enabling game manager
         void Start()
         {
-            StartLevel();
+            level.SetupLevel();
         }
 		
 
         //This is called each time a scene is loaded.
         void OnLevelWasLoaded()
         {
-            //Call StartLevel to initialize next level.
-            StartLevel();
+            //Call SetupLevel only to main instance of GameManager
+            if (instance == this)
+                level.SetupLevel();
         }
 
-        private void StartLevel()
-        {
-            this.enabled = true;
-                
-            LoadPlayers();
-
-            level.SetupLevel(GameConfiguration.InitialArenaSize);
-        }
-
+        // Loads Player prefab and Instantiate players set
         private void LoadPlayers()
         {
-            players = new List<Player>();
-
             Player player = Resources.Load("Prefabs/Player", typeof(Player)) as Player;
 
             if (player)
             {
-                foreach (PlayerInitData playerData in gameConfiguration.Players)
+                for (int i = 0; i < 6; i++)
                 {
                     players.Add(Instantiate(player));
-                    players[players.Count - 1].SetupPlayer(playerData, gameConfiguration.InitialArenaSize);
                 }
             }
             else
@@ -112,7 +105,7 @@ namespace ProjectScopes
             }
         }
 
-		// Update is called once per frame
+        // Updates frames depending on frameRate 
 		void Update () 
         {
             if (Time.time > nextFrame)
@@ -123,6 +116,7 @@ namespace ProjectScopes
             }
 
 
+            // to delete - for test
             if(Input.GetKeyDown(KeyCode.G))
             {
                 foreach (Player player in players) 
@@ -161,11 +155,6 @@ namespace ProjectScopes
 			set
 			{
 				gameConfiguration = value;
-
-                if (!this.enabled)
-                {
-                    this.enabled = true;
-                }
 			}
 			get
 			{

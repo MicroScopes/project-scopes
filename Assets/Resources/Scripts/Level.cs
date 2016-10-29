@@ -19,7 +19,7 @@ namespace ProjectScopes
     	
     	}*/
 
-        public void SetupLevel(int arenaInitSize)
+        public void SetupLevel()
         {
             arena = Resources.Load("Prefabs/Arena", typeof(Arena)) as Arena;
 
@@ -32,6 +32,8 @@ namespace ProjectScopes
             {
                 Debug.LogError("Arena prefab not found");
             }
+
+            ResetPlayers();
         }
 
         public void MovePlayers()
@@ -54,6 +56,15 @@ namespace ProjectScopes
             {
                 Invoke("Restart", 1.5f);
                 GameManager.instance.enabled = false;
+            }
+        }
+
+
+        void ResetPlayers()
+        {
+            foreach (Player player in GameManager.instance.players)
+            {
+                player.Reset();
             }
         }
 

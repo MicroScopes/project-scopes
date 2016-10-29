@@ -11,6 +11,7 @@ namespace ProjectScopes
 
         private int playerSize;
         private float playerSpeed;
+        private string playerNickname;
 
         private float playerDirection;
 
@@ -41,8 +42,8 @@ namespace ProjectScopes
             holeTimer = 1000;
             holeSize = 50;
 
-            active = true;
-            visible = false; //true;
+            active = false;
+            visible = false;
 
             borderHeads = new List<GameObject>();
             borderHead = Resources.Load("Prefabs/PlayerHead", typeof(GameObject)) as GameObject;
@@ -52,12 +53,16 @@ namespace ProjectScopes
                 for (int i = 0; i < 3; i++)
                 {
                     borderHeads.Add(Instantiate(borderHead));
+                    borderHeads[borderHeads.Count - 1].transform.SetParent(this.transform);
                 }
             }
             else
             {
                 Debug.LogError("PlayerHead prefab not found");
             }
+
+            // Sets Player object to not be destroyed when reloading scene
+            DontDestroyOnLoad(gameObject);
     	}
     	
     	// Update is called once per frame
@@ -65,37 +70,64 @@ namespace ProjectScopes
     	
     	}*/
             
-        public void SetupPlayer(PlayerInitData playerData, int arenaInitSize)
+        public void SetupPlayer(string nickname, Color color, KeyCode[] movementKeys)
         {
-            arenaSize = arenaInitSize;
-            arenaScalar = 6.0f / arenaInitSize;
+            arenaSize = GameManager.instance.GameConfiguration.InitialArenaSize;
+            arenaScalar = 6.0f / arenaSize;
             angleScalar = 0.015f;
 
-            playerPos = new Vector2(Random.Range(20.0f, arenaInitSize - 20),
-                                    Random.Range(20.0f, arenaInitSize - 20));
+            playerPos = new Vector2(Random.Range(20.0f, arenaSize - 20),
+                                    Random.Range(20.0f, arenaSize - 20));
 
-            playerSize = playerData.PlayerSize;
-            playerSpeed = playerData.PlayerSpeed;
+            playerSize = GameManager.instance.GameConfiguration.InitialPlayersSize;
+            playerSpeed = GameManager.instance.GameConfiguration.InitialPlayersSpeed;
             playerDirection = Random.Range(0.0f, 2.0f); 
 
-            playerColor = playerData.PlayerColor;
+            playerColor = color;
+            playerNickname = nickname;
 
-            keyLeft = playerData.KeyLeft;
-            keyRight = playerData.KeyRight;
+            keyLeft = movementKeys[0];
+            keyRight = movementKeys[1];
 
             MeshRenderer renderer;
 
             this.transform.position = new Vector3(-1.0f, -1.0f, 0.0f);
             renderer = this.GetComponent<MeshRenderer> ();
-            renderer.material.color = playerData.PlayerColor + new Color(0.5f, 0.5f, 0.5f);
+            renderer.material.color = playerColor + new Color(0.5f, 0.5f, 0.5f);
 
             foreach (GameObject head in borderHeads)
             {
                 head.transform.position = new Vector3(-1.0f, -1.0f, 0.0f);
                 renderer = head.GetComponent<MeshRenderer> ();
-                renderer.material.color = playerData.PlayerColor + new Color(0.5f, 0.5f, 0.5f);
+                renderer.material.color = playerColor + new Color(0.5f, 0.5f, 0.5f);
             }
         }
+
+
+        public void Reset()
+        {
+            playerPos = new Vector2(Random.Range(20.0f, arenaSize - 20),
+                                    Random.Range(20.0f, arenaSize - 20));
+
+            playerSize = GameManager.instance.GameConfiguration.InitialPlayersSize;
+            playerSpeed = GameManager.instance.GameConfiguration.InitialPlayersSpeed;
+            playerDirection = Random.Range(0.0f, 2.0f);
+
+            float headSize = 2 * arenaScalar * playerSize;
+
+            this.transform.position = new Vector3(-1.0f, -1.0f, 0.0f);
+            this.transform.localScale = new Vector3 (headSize, headSize, headSize);
+
+            foreach (GameObject head in borderHeads)
+            {
+                head.transform.position = new Vector3(-1.0f, -1.0f, 0.0f);
+            }
+
+            holeDelay = 0;
+            holeTimerDelay = 0;
+            visible = false;
+        }
+
 
         public void Turn ()
         {
@@ -134,13 +166,6 @@ namespace ProjectScopes
                 float headSize = 2 * arenaScalar * playerSize;
 
                 this.transform.localScale = new Vector3 (headSize, headSize, headSize);
-
-                foreach (GameObject head in borderHeads)
-                {
-                    head.transform.localScale = new Vector3 (headSize, headSize, headSize);
-                }
-
-                //MoveHead();
             }
         }
 

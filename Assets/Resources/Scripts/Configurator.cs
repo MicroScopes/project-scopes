@@ -57,20 +57,14 @@ public class Configurator
     private int initialPlayersSize = 1;
     private float[] playersSize = new float[] { 1.0f, 3.0f, 5.0f };
 
-        public List<PlayerInitData> Players = new List<PlayerInitData>();
-
 
         //TESTOWA KONF
         public Configurator()
         {
-            currentNoOfPlayers = 2;
+            //currentNoOfPlayers = 2;
             initialArenaSize = 800;
             initialPlayersSize = 6;
             initialPlayersSpeed = 2.0f;
-
-            Players.Add (new PlayerInitData (initialPlayersSize, initialPlayersSpeed, Color.red, KeyCode.LeftArrow, KeyCode.RightArrow));
-            //Players.Add (new PlayerInitData (initialPlayersSize, initialPlayersSpeed, Color.green, KeyCode.Z, KeyCode.X));
-            //Players.Add (new PlayerInitData (5, 2.0f, Color.blue, KeyCode.B, KeyCode.N));
         }
        
     /*!
