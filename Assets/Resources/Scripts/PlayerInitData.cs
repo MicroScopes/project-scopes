@@ -1,9 +1,8 @@
 ﻿using UnityEngine;
-using System.Collections;
 
 namespace ProjectScopes
 {
-  
+
     public class PlayerInitData
     {
         public PlayerInitData(string nickname, Color color, float speed, float size, KeyCode[] movementKeys, bool isActive)
@@ -14,6 +13,11 @@ namespace ProjectScopes
             Size = size;
             MovementKeys = movementKeys;
             IsActive = isActive;
+        }
+
+        public PlayerInitData()
+        {
+
         }
 
         /*!
@@ -70,6 +74,18 @@ namespace ProjectScopes
      *          and right turn key.
      */
         public KeyCode[] MovementKeys
+        {
+            set;
+            get;
+        }
+
+        public KeyCode LeftKey
+        {
+            set;
+            get;
+        }
+
+        public KeyCode RightKey
         {
             set;
             get;

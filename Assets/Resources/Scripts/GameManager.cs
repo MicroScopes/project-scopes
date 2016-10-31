@@ -11,6 +11,7 @@
 using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEngine.SceneManagement;
 
 //==================================================
 //                 N A M E S P A C E
@@ -51,8 +52,10 @@ namespace ProjectScopes
 
 		void Awake ()
 		{
-			// Implementation of singleton pattern
-			if (instance == null)
+            gameConfiguration = GUIManager.configurator;
+
+             // Implementation of singleton pattern
+            if (instance == null)
 			{
 				instance = this;
 
@@ -116,9 +119,24 @@ namespace ProjectScopes
 
             if (player)
             {
-                for (int i = 0; i < 6; i++)
+
+                for (int i = 0; i < gameConfiguration.CurrentNoOfPlayers; i++)
                 {
                     players.Add(Instantiate(player));
+
+                }
+
+                int j = 0;
+                foreach (PlayerInitData p in gameConfiguration.Players)
+                {
+                    if (p != null)
+                    {
+                        KeyCode[] keys = { p.LeftKey, p.RightKey };
+                        players[j].SetupPlayer(p.Nickname, p.Color, keys);
+                        players[j].IsActive = true;
+                        Debug.Log(j);
+                        j++;
+                    }
                 }
             }
             else
@@ -152,7 +170,8 @@ namespace ProjectScopes
             }
 
             //GUIDataCollector.instance.enabled = true;
-            GUIDataCollector.instance.Restart();
+            //GUIDataCollector.instance.Restart();
+            SceneManager.LoadScene("GUI");
         }
 
         // Updates frames depending on frameRate 

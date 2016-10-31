@@ -9,7 +9,6 @@
 //==================================================
 
 using System.Collections.Generic;
-using UnityEngine;
 
 //==================================================
 //                 N A M E S P A C E
@@ -59,7 +58,8 @@ public class Configurator
     private int[] playersSize = new int[] { 3, 6, 12 };
 
     // List of all players initial data.
-    private PlayerInitData[] players = new PlayerInitData[6];
+    private List<PlayerInitData> players = new List<PlayerInitData>()
+                                           {null, null, null, null, null, null};
 
     /*!
      * @brief Constructor. Initializes configurator object with initial data.
@@ -69,26 +69,6 @@ public class Configurator
      */
     public Configurator()
     {
-        // Initially only two players (required minimum) are active.
-            players[0] = new PlayerInitData("PLAYER 1", new Color(214f/255f, 0f, 147f/255f),
-                                playersSpeed[InitialPlayersSpeed], playersSize[InitialArenaSize],
-                                new KeyCode[] {KeyCode.LeftArrow, KeyCode.RightArrow}, true);
-            players[1] = new PlayerInitData("PLAYER 2", new Color(153f/255f, 0f, 1f),
-                                playersSpeed[InitialPlayersSpeed], playersSize[InitialArenaSize],
-                                new KeyCode[] {KeyCode.Z, KeyCode.X}, true);
-            players[2] = new PlayerInitData("PLAYER 3", new Color(51f/255f, 153f/255f, 1f),
-                                playersSpeed[InitialPlayersSpeed], playersSize[InitialArenaSize],
-                                new KeyCode[] {KeyCode.G, KeyCode.H}, false);
-            players[3] = new PlayerInitData("PLAYER 4", new Color(1f, 153f/255f, 102f/255f),
-                                playersSpeed[InitialPlayersSpeed], playersSize[InitialArenaSize],
-                                new KeyCode[] {KeyCode.C, KeyCode.V}, false);
-            players[4] = new PlayerInitData("PLAYER 5", new Color(0f, 204f/255f, 153f/255f),
-                                playersSpeed[InitialPlayersSpeed], playersSize[InitialArenaSize],
-                                new KeyCode[] {KeyCode.J, KeyCode.K}, false);
-            players[5] = new PlayerInitData("PLAYER 6", new Color(102f/255f, 205f/255f, 102f/255f),
-                                playersSpeed[InitialPlayersSpeed], playersSize[InitialArenaSize],
-                                new KeyCode[] {KeyCode.N, KeyCode.M}, false);
-        
         // Default values of players initial data is 'normal'.
         InitialArenaSize = 1;
         InitialPlayersSpeed = 1;
@@ -96,12 +76,34 @@ public class Configurator
     }
 
     /*!
-     * @brief Allows to set and get current number of players.
-     *
-     * @details The minimum and maximum number of players are defined by
-     *          MinNoOfPlayers and MaxNoOfPlayers constants.
-     * @return Number of players that are currently ready to play.
+     * @brief Adds a new player on the players list.
+     * 
+     * @details Creates a new Player object and fills it with initial data.
+     * @param id Id of a player. The player will be created on 'id' position
+     *        on the list.
      */
+    public void AddPlayer(int id)
+    {
+        ++CurrentNoOfPlayers;
+        
+        players[id] = new PlayerInitData();
+    }
+
+    /*!
+     * @brief Removes the player from the players list.
+     * 
+     * @details Removes a Player object and sets null on its place.
+     * @param id Id of a player. The player will be removed from 'id' position
+     *        from the list.
+     */
+    public void RemovePlayer(int id)
+    {
+        --CurrentNoOfPlayers;
+
+        players[id] = null;
+    }
+
+    // Allows to set and get current number of players.
     public int CurrentNoOfPlayers
     {
         set;
@@ -153,7 +155,7 @@ public class Configurator
      * @details GUI can update player specific information depending on
      *          user input.
      */
-    public PlayerInitData[] Players
+    public List<PlayerInitData> Players
     {
         get
         {

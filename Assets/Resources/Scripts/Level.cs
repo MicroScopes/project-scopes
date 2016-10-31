@@ -42,11 +42,14 @@ namespace ProjectScopes
 
             foreach (Player player in GameManager.instance.players) 
             {
-                player.Turn ();
-
-                if (player.IsActive)
+                if (player != null)
                 {
-                    end = false;
+                    player.Turn();
+
+                    if (player.IsActive)
+                    {
+                        end = false;
+                    }
                 }
             }
 
@@ -65,12 +68,11 @@ namespace ProjectScopes
             int ind = 0;
             foreach (PlayerInitData player in GameManager.instance.GameConfiguration.Players)
             {
-                if (player.IsActive)
+                if (player != null) //if (player.IsActive)
                 {
                     GameManager.instance.players[ind].Reset();
+                    ind++;
                 }
-
-                ind++;
             }
         }
 
