@@ -54,7 +54,7 @@ namespace ProjectScopes
 
             if (end)
             {
-                Invoke("Restart", 1.5f);
+                Invoke("Restart", 1.0f);
                 GameManager.instance.enabled = false;
             }
         }

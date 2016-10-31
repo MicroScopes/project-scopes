@@ -142,7 +142,7 @@ namespace ProjectScopes
 
         void GameOver()
         {
-            gameLevel = 1;
+            gameLevel = 0;
             Debug.Log("GAME OVER");
 
             foreach (Player player in players)
@@ -151,8 +151,17 @@ namespace ProjectScopes
                 player.IsActive = false;
             }
 
-            //GUIDataCollector.instance.enabled = true;
             GUIDataCollector.instance.Restart();
+        }
+
+        public void Restart()
+        {
+            foreach (Player player in players)
+            {
+                player.IsActive = false;
+            }
+
+            this.enabled = true;
         }
 
         // Updates frames depending on frameRate 

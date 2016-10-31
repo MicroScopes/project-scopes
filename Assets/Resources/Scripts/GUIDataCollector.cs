@@ -407,7 +407,8 @@ namespace ProjectScopes
             }
 
             ProjectScopes.GameManager.instance.enabled = true;
-            this.enabled = false;
+
+            GameManager.instance.Restart();
         }
 
         // This method is called one during scene initialization. It reads
