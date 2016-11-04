@@ -24,6 +24,7 @@ Library/
 
 # Unity3D generated meta files
 *.pidb.meta
+*.meta*
 
 # Unity3D Generated File On Crash Reports
 sysinfo.txt
@@ -53,3 +54,14 @@ obj/
 .Trashes
 ehthumbs.db
 Thumbs.db
+
+# LaTeX
+*.log
+*.aux
+*.lot
+*.lof
+*.out
+*.toc
+*.cpt
+*.gz*
+*converted-to.pdf
