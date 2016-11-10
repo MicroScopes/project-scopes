@@ -36,7 +36,7 @@ namespace ProjectScopes
  *
  * @details It helps to keep GUIManager class readable and easy to maintain.
  */
-public static class GUIHelper
+public class GUIHelper
 {
     // Position of element 'id' in the name string.
     private const int IdPosition = 6;
@@ -170,11 +170,11 @@ public static class GUIHelper
             if (player != null &&
                (keyCode == player.LeftKey || keyCode == player.RightKey))
             {
-                return false;
+                return true;
             }
         }
 
-        return true;
+        return false;
     }
 
     /*!
@@ -236,6 +236,10 @@ public static class GUIHelper
         root.name = root.name.Split('(')[0].Insert(IdPosition, id.ToString());
         foreach (Transform child in root.transform)
         {
+            if (!child.name.Contains("Player"))
+            {
+                continue;
+            }
             child.name = child.name.Insert(IdPosition, id.ToString());
         }
     }
