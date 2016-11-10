@@ -39,6 +39,11 @@ namespace ProjectScopes
  */
 public class GUIManager: MonoBehaviour
 {
+    // Screen properties.
+    private const bool Fullscreen = false;
+    private const int ScreenWidth = 650;
+    private const int ScreenHeight = 475;
+
     // Disabled/Enabled player panels prefab objects.
     private GameObject disabledPanel;
     private GameObject enabledPanel;
@@ -89,6 +94,9 @@ public class GUIManager: MonoBehaviour
     // initial configuration.
     private void Awake()
     {
+        // Set initial screen size.
+        Screen.SetResolution(ScreenWidth, ScreenHeight, Fullscreen);
+
         // Load player panel prefabs.
         disabledPanel = GUIHelper.Load("Prefabs/PlayerDisabledPanel");
         enabledPanel = GUIHelper.Load("Prefabs/PlayerEnabledPanel");
@@ -169,16 +177,21 @@ public class GUIManager: MonoBehaviour
         configurator.AddPlayer(id - 1);
 
         // Fill player data with the initial values.
-        string[] data = GUIHelper.PlayerInitialData[id - 1].Split(';');
-        configurator.Players[id - 1].Nickname = data[0];
-        configurator.Players[id - 1].Color = new Color(float.Parse(data[1]),
-                                                       float.Parse(data[2]),
-                                                       float.Parse(data[3]),
-                                                       1.0f);
-        configurator.Players[id - 1].LeftKey = (KeyCode)Enum.Parse
-                                               (typeof(KeyCode), data[4]);
-        configurator.Players[id - 1].RightKey = (KeyCode)Enum.Parse
-                                                (typeof(KeyCode), data[5]);
+        PlayerInitialData player = GUIHelper.PlayerInitialData[id - 1];
+        configurator.Players[id - 1].Nickname = player.Nickname;
+        configurator.Players[id - 1].Color = player.Color;
+        configurator.Players[id - 1].LeftKey = KeyCode.None;
+        if (GUIHelper.IsKeySupported(player.LeftKey) &&
+            !GUIHelper.IsKeyInUsed(player.LeftKey, configurator.Players))
+        {
+            configurator.Players[id - 1].LeftKey = player.LeftKey;
+        }
+        configurator.Players[id - 1].RightKey = KeyCode.None;
+        if (GUIHelper.IsKeySupported(player.RightKey)  &&
+            !GUIHelper.IsKeyInUsed(player.RightKey, configurator.Players))
+        {
+            configurator.Players[id - 1].RightKey = player.RightKey;
+        }
 
         // Display panel on the GUI.
         LoadPanel(enabledPanel, disabledPanel, id);
@@ -195,8 +208,8 @@ public class GUIManager: MonoBehaviour
                 KeyCode keyCode = GUIHelper.KeyPressed();
 
                 // Check if key is supported and noone is using it already.
-                if (GUIHelper.IsKeySupported(keyCode) ||
-                    GUIHelper.IsKeyInUsed(keyCode, configurator.Players))
+                if (GUIHelper.IsKeySupported(keyCode) &&
+                    !GUIHelper.IsKeyInUsed(keyCode, configurator.Players))
                 {
                     // Update GUI with key output format.
                     GUIHelper.UpdateKeyButtonText(keyButton, keyCode);
@@ -205,14 +218,16 @@ public class GUIManager: MonoBehaviour
                     if (keyButton.name.Contains("Left"))
                     {
                         configurator.Players[id - 1].LeftKey = keyCode;
+                        GUIHelper.PlayerInitialData[id - 1].LeftKey = keyCode;
                     }
                     else
                     {
                         configurator.Players[id - 1].RightKey = keyCode;
+                        GUIHelper.PlayerInitialData[id - 1].RightKey = keyCode;
                     }
-
-                    break;
                 }
+
+                break;
             }
 
             yield return null;
@@ -288,6 +303,7 @@ public class GUIManager: MonoBehaviour
             nickname = configurator.Players[id - 1].Nickname;
         }
         configurator.Players[id - 1].Nickname = nickname;
+        GUIHelper.PlayerInitialData[id - 1].Nickname = nickname;
     }
 
     // Updates configurator with the new initial player size.

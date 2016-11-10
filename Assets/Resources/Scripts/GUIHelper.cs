@@ -36,7 +36,7 @@ namespace ProjectScopes
  *
  * @details It helps to keep GUIManager class readable and easy to maintain.
  */
-public static class GUIHelper
+public class GUIHelper
 {
     // Position of element 'id' in the name string.
     private const int IdPosition = 6;
@@ -63,17 +63,36 @@ public static class GUIHelper
      *
      * @details The settings are read from 'defaults.cfg' file.
      */
-    public static readonly string[] PlayerInitialData = 
+    public static readonly List<PlayerInitialData> PlayerInitialData = 
                                     InitialPlayerConfiguration();
 
     // Reads initial players configuration from 'defaults.cfg' file.
-    private static string[] InitialPlayerConfiguration()
+    private static List<PlayerInitialData> InitialPlayerConfiguration()
     {
         string path = "Assets/Resources/Configs/defaults.cfg";
+        string[] data;
         using (StreamReader streamReader = new StreamReader(path))
         {
-            return streamReader.ReadToEnd().Split('\n');
+            data = streamReader.ReadToEnd().Split('\n');
         }
+
+        List<PlayerInitialData> initialData = new List<PlayerInitialData>();
+        foreach (string row in data)
+        {
+            string[] items = row.Split(',');
+            PlayerInitialData player = new PlayerInitialData();
+            player.Nickname = items[0];
+            player.Color = new Color(float.Parse(items[1]),
+                                     float.Parse(items[2]),
+                                     float.Parse(items[3]),
+                                     1.0f);
+            player.LeftKey = (KeyCode)Enum.Parse(typeof(KeyCode), items[4]);
+            player.RightKey = (KeyCode)Enum.Parse(typeof(KeyCode), items[5]);
+
+            initialData.Add(player);
+        }
+
+        return initialData;
     }
 
     // Reads list of all key codes and the corresponding key output format from
@@ -170,11 +189,11 @@ public static class GUIHelper
             if (player != null &&
                (keyCode == player.LeftKey || keyCode == player.RightKey))
             {
-                return false;
+                return true;
             }
         }
 
-        return true;
+        return false;
     }
 
     /*!
@@ -236,6 +255,10 @@ public static class GUIHelper
         root.name = root.name.Split('(')[0].Insert(IdPosition, id.ToString());
         foreach (Transform child in root.transform)
         {
+            if (!child.name.Contains("Player"))
+            {
+                continue;
+            }
             child.name = child.name.Insert(IdPosition, id.ToString());
         }
     }
@@ -325,12 +348,6 @@ public static class GUIHelper
      */
     public static char ValidateNickname(string text, int index, char addedChar)
     {
-        // If addedChar is not digit or alphanumeric return empty character.
-        if (!char.IsDigit(addedChar) &&
-            !(char.ToLower(addedChar) >= 'a' && char.ToLower(addedChar) <= 'z'))
-        {
-            return char.MinValue;
-        }
         // Else return addedChar converted to uppercase.
         return char.ToUpper(addedChar);
     }
