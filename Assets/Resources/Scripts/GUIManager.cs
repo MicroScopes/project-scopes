@@ -39,6 +39,11 @@ namespace ProjectScopes
  */
 public class GUIManager: MonoBehaviour
 {
+    // Screen properties.
+    private const int ScreenWidth = 650;
+    private const int ScreenHeight = 475;
+    private const bool Fullscreen = false;
+
     // Disabled/Enabled player panels prefab objects.
     private GameObject disabledPanel;
     private GameObject enabledPanel;
@@ -89,6 +94,9 @@ public class GUIManager: MonoBehaviour
     // initial configuration.
     private void Awake()
     {
+        // Set initial screen size.
+        Screen.SetResolution(ScreenWidth, ScreenHeight, Fullscreen);
+
         // Load player panel prefabs.
         disabledPanel = GUIHelper.Load("Prefabs/PlayerDisabledPanel");
         enabledPanel = GUIHelper.Load("Prefabs/PlayerEnabledPanel");
