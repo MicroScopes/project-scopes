@@ -236,6 +236,10 @@ public static class GUIHelper
         root.name = root.name.Split('(')[0].Insert(IdPosition, id.ToString());
         foreach (Transform child in root.transform)
         {
+            if (!child.name.Contains("Player"))
+            {
+                continue;
+            }
             child.name = child.name.Insert(IdPosition, id.ToString());
         }
     }
