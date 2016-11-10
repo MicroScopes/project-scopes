@@ -65,3 +65,7 @@ Thumbs.db
 *.cpt
 *.gz*
 *converted-to.pdf
+latex/
+
+# Other
+*.svg
