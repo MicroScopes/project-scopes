@@ -1,0 +1,85 @@
+%--------------------------------------------------
+%                 P A C K A G E S
+%--------------------------------------------------
+
+\documentclass[10pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[a4paper, total={6.5in, 10in}]{geometry}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{hyperref}
+\usepackage{graphicx}
+\usepackage[export]{adjustbox}
+\usepackage{subcaption}
+\usepackage{hyperref}
+\usepackage{fancyvrb}
+\usepackage{enumitem}
+\usepackage{cprotect}
+\usepackage{array}
+
+%--------------------------------------------------
+%   D O C U M E N T   C O N F I G U R A T I O N
+%--------------------------------------------------
+
+\newcommand*{\pslogo}{\includegraphics{logo}}
+
+%--------------------------------------------------
+%                T I T L E P A G E
+%--------------------------------------------------
+
+\newcommand*{\dctitle}
+{
+	\begingroup
+	\hbox
+	{
+		\hspace*{0.15\textwidth}
+		\rule{1pt}{\textheight}
+		\hspace*{0.05\textwidth}
+		\parbox[b]{0.8\textwidth}
+		{
+			{\noindent\huge\bfseries PROJECT-SCOPES \\[0.5\baselineskip] GAME CONCEPT}\\[2\baselineskip]
+			{\noindent\Large\scshape by MicroScopes \par}
+
+			\vspace{0.5\textheight}
+			%{\noindent INSERT PROJECT-SCOPES LOGO HERE!!! \par} 
+			%\pslogo
+		}
+	}
+	\endgroup
+}
+
+%--------------------------------------------------
+%         D O C U M E N T   C O N T E N T
+%--------------------------------------------------
+
+\begin{document}
+
+% titlepage
+\dctitle
+
+% table of contents
+\tableofcontents
+
+% document content
+\newpage
+
+% general game description
+\include{01_general_game_description}
+
+% requirements for the game
+\include{02_requirements}
+
+% structure of the game
+\include{03_game_structure}
+
+% gameplay
+\include{04_gameplay}
+
+
+% list of all images
+\newpage
+\listoffigures
+\listoftables
+
+\end{document}

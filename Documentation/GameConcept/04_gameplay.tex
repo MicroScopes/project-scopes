@@ -1,0 +1,64 @@
+\section{Gameplay}
+\noindent This chapter presents the general rules of the gameplay, the end game conditions and the ability to modify the basic mechanics both before and during the game. This is an information about the basic version of the game, the final version can be extended with additional elements.
+
+\subsection{Gameplay configuration}
+\noindent Options configurable from the menu screen (can't be changed during the game).
+\\
+\\
+\noindent \textbf{Individual settings:}
+\begin{itemize}
+	\item[-] individual control keys for each player
+	\item[-] individual color of each player (6 colors available)
+	\item[-] individual nickname for each player
+\end{itemize}
+
+\noindent \textbf{Global settings:}
+\begin{itemize}
+	\item[-] number of players (2 - 6)
+	\item[-] initial size of players
+	\item[-] initial speed of players
+	\item[-] initial arena size
+\end{itemize}
+
+\subsection{Main rules}
+\noindent Basic (not modified) game rules:
+\begin{itemize}
+	\item[1.] The minimum number of players participating in the game is 2.
+	\item[2.] The maximum number of players participating in the game is 6.
+	\item[3.] Players plays simultaneously on a shared arena.
+	\item[4.] During the game each player is moving with a constant speed in a given direction, which can be changed of specific angle by the control keys.
+	\item[5.] The game is divided into rounds.
+	\item[6.] The aim of the round is to eliminate the other players.
+	\item[7.] A player is eliminated if he touched a trace left by another player or himself.
+	\item[8.] Player can navigate only on the empty arena space between the traces of other players or its own.
+	\item[9.] The player who looses the first, receives 0 points, the next eliminated player gets 1 point more than the previous one.
+	\item[10.] When there only one player remains on the arena, the round is considered as complete and this player is the winner of the round. This is followed by resetting the score and start the next round.
+\end{itemize}
+\noindent
+\\
+\noindent Ending conditions:
+\begin{itemize}
+	\item[1.] If after the end of the round the highest total score of at least one player from all rounds is greater than or equal the winning number of points, that player is the winner of the game.
+	\item[2.] The tie is possible in a situation where more than one player has the same sum of points fulfilling the condition 1.
+\end{itemize}
+
+\subsection{Gameplay modifiers (Bonuses)}
+\noindent The game includes a system of bonuses that affect the basic mechanics during the game. A single bonus is an object randomly choosen from the pool of available bonuses and placed at a random moment of the game in a random place on the arena. It is represented by the corresponding graphics. If the player collides with bonus object, it disappears and activates an effect corresponding to the bonus. This effect modifies the basic mechanics and rules of the game for a certain period of time for a specific group of players. Bonus effects can accumulate or compensate each other.
+\\
+\\
+\noindent Basic bonuses:
+\begin{itemize}
+	\item[-] \textbf{speed} - for a short while increases the movement speed of the player
+	\item[-] \textbf{slow} - for a short while decreases the movement speed of the player
+	\item[-] \textbf{thick} - for a short while increases the trace size of the player
+	\item[-] \textbf{thin} - for a short while decreases the trace size of the player
+	\item[-] \textbf{90 degrees} - for a short while causes the player can performs only turns by 90 degrees
+\end{itemize}
+\noindent Each of the bonuses described above occurs in two versions, global and individual.
+\begin{itemize}
+	\item[-] \textbf{Individual bonus} - it means that the effect applies only to the player who first activated the bonus
+	\item[-] \textbf{Global bonus} - it means that the effect applies to all active players in the arena except the player who activated the bonus
+\end{itemize}
+
+\subsection{Game over}
+\noindent When either of the ending conditions is reached, the game goes to the summary screen which displays score for all players participating in the game. The player with the highest number of points is in the first place. Next are the players who achieved the lowest results. Summary screen offers the possibility to return to the setup screen of each mode to start the next game, change the settings or mode.
