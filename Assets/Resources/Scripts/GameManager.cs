@@ -53,6 +53,7 @@ namespace ProjectScopes
 		void Awake ()
 		{
             gameConfiguration = GUIManager.configurator;
+            Screen.SetResolution(gameConfiguration.ArenaSize, gameConfiguration.ArenaSize, false);
 
              // Implementation of singleton pattern
             if (instance == null)
