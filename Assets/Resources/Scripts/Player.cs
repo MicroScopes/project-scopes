@@ -15,9 +15,6 @@ namespace ProjectScopes
 
         private float playerDirection;
 
-        //private KeyCode keyLeft; 
-        //private KeyCode keyRight;
-
         private int arenaSize;
 
         private bool active;
@@ -33,6 +30,8 @@ namespace ProjectScopes
 
         private float arenaScalar;
         private float angleScalar;
+
+        private Configurator gameConfiguration;
 
     	// Use this for initialization
         void Awake () 
@@ -61,8 +60,7 @@ namespace ProjectScopes
                 Debug.LogError("PlayerHead prefab not found");
             }
 
-            // Sets Player object to not be destroyed when reloading scene
-            DontDestroyOnLoad(gameObject);
+            gameConfiguration = GUIManager.configurator;
     	}
     	
     	// Update is called once per frame
@@ -72,15 +70,15 @@ namespace ProjectScopes
             
         public void SetupPlayer(string nickname, Color color, KeyCode[] movementKeys)
         {
-            arenaSize = GameManager.instance.GameConfiguration.ArenaSize;
+            arenaSize = gameConfiguration.ArenaSize;
             arenaScalar = 6.0f / arenaSize;
             angleScalar = 0.015f;
 
             playerPos = new Vector2(Random.Range(20.0f, arenaSize - 20),
                                     Random.Range(20.0f, arenaSize - 20));
 
-            playerSize = GameManager.instance.GameConfiguration.PlayerSize;
-            playerSpeed = GameManager.instance.GameConfiguration.PlayerSpeed;
+            playerSize = gameConfiguration.PlayerSize;
+            playerSpeed = gameConfiguration.PlayerSpeed;
             playerDirection = Random.Range(0.0f, 2.0f); 
 
             playerColor = color;
@@ -104,32 +102,6 @@ namespace ProjectScopes
                 renderer = head.GetComponent<MeshRenderer> ();
                 renderer.material.color = playerColor + new Color(0.2f, 0.2f, 0.2f);
             }
-        }
-
-
-        public void Reset()
-        {
-            playerPos = new Vector2(Random.Range(20.0f, arenaSize - 20),
-                                    Random.Range(20.0f, arenaSize - 20));
-
-            playerSize = GameManager.instance.GameConfiguration.PlayerSize;
-            playerSpeed = GameManager.instance.GameConfiguration.PlayerSpeed;
-            playerDirection = Random.Range(0.0f, 2.0f);
-
-            float headSize = 2 * arenaScalar * playerSize;
-
-            this.transform.position = new Vector3(-1.0f, -1.0f, 0.0f);
-            this.transform.localScale = new Vector3 (headSize, headSize, headSize);
-
-            foreach (GameObject head in borderHeads)
-            {
-                head.transform.position = new Vector3(-1.0f, -1.0f, 0.0f);
-            }
-
-            holeDelay = 0;
-            holeTimerDelay = 0;
-            visible = false;
-            active = true;
         }
 
 

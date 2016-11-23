@@ -47,9 +47,9 @@ namespace ProjectScopes
     	}
 
 
-        public void SetupArena()
+        public void SetupArena(int arenaSize)
         {
-            arenaSize = GameManager.instance.GameConfiguration.ArenaSize;
+            this.arenaSize = arenaSize;
 
             // Setup main texture
             mainTexture = new Texture2D (arenaSize,arenaSize);
@@ -65,19 +65,11 @@ namespace ProjectScopes
             MeshRenderer renderer = GetComponent<MeshRenderer> ();
             renderer.sharedMaterial.mainTexture = mainTexture;
         }
-            
-
-        public void RedrawArena ()
-        {
-            DrawPlayers ();
-
-            RefreshTexture();
-        }
 
         // Checks collision and draws each active player on main texture
-        void DrawPlayers ()
+        public void RedrawArena (Level level)
         {
-            foreach (Player player in GameManager.instance.players)
+            foreach (Player player in level.players)
             {
                 // Move only active players
                 if (player.IsActive)
@@ -134,6 +126,8 @@ namespace ProjectScopes
                     player.MoveHead();
                 }
             }
+
+            RefreshTexture();
         }
 
 

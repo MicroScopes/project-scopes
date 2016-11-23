@@ -1,23 +1,127 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEngine.SceneManagement;
 
 namespace ProjectScopes
 { 
     public class Level : MonoBehaviour 
     {
         private Arena arena;
+        public List<Player> players;
+        private Configurator gameConfiguration;
+
+        // Variables used for simple frame rate control
+        private float frameRate;
+        private float nextFrame;
+
+        private bool pause;
 
         // Use this for initialization
-    	void Awake () 
+        void Awake ()
         {
-            
-    	}
+            gameConfiguration = GUIManager.configurator;
+
+            Screen.SetResolution(gameConfiguration.ArenaSize, gameConfiguration.ArenaSize, false);
+
+            // Creates a default set of 6 inactive players
+            LoadPlayers();
+
+            frameRate = 0.01f;
+            nextFrame = 0.0f;
+
+            pause = false;
+        }
+
+        //This is called each time a scene is loaded.
+        void OnLevelWasLoaded()
+        {
+            this.enabled = true;
+            SetupLevel();
+        }
     	
-    	// Update is called once per frame
-    	/*void Update () {
-    	
-    	}*/
+        // Updates frames depending on frameRate 
+        void Update () 
+        {
+            if (Time.time > nextFrame)
+            {
+                nextFrame = Time.time + frameRate;
+
+                if (!pause)
+                {
+                    MovePlayers();
+                }
+            }
+
+            if(Input.GetKeyDown(KeyCode.Space))
+            {
+                HandlePause();
+            }
+
+            // to delete - for test
+            if(Input.GetKeyDown(KeyCode.G))
+            {
+                foreach (Player player in players) 
+                {
+                    player.DoubleSize ();
+                }
+            }
+
+            if(Input.GetKeyDown(KeyCode.H))//
+            {
+                foreach (Player player in players) 
+                {
+                    player.ReduceSize ();
+                }
+            }
+
+            if(Input.GetKeyDown(KeyCode.J))
+            {
+                foreach (Player player in players) 
+                {
+                    player.IncreaseSpeed ();
+                }
+            }
+
+            if(Input.GetKeyDown(KeyCode.K))
+            {
+                foreach (Player player in players) 
+                {
+                    player.ReduceSpeed ();
+                }
+            }
+        }
+
+        // Loads Player prefab and Instantiate players set
+        private void LoadPlayers()
+        {
+            Player player = Resources.Load("Prefabs/Player", typeof(Player)) as Player;
+
+            if (player)
+            {
+
+                for (int i = 0; i < gameConfiguration.CurrentNoOfPlayers; i++)
+                {
+                    players.Add(Instantiate(player));
+                }
+
+                int j = 0;
+                foreach (PlayerInitialData p in gameConfiguration.Players)
+                {
+                    if (p != null)
+                    {
+                        KeyCode[] keys = { p.LeftKey, p.RightKey };
+                        players[j].SetupPlayer(p.Nickname, p.Color, keys);
+                        players[j].IsActive = true;
+                        j++;
+                    }
+                }
+            }
+            else
+            {
+                Debug.LogError("Player prefab not found");
+            }
+        }
 
         public void SetupLevel()
         {
@@ -26,21 +130,19 @@ namespace ProjectScopes
             if (arena)
             {
                 Instantiate(arena);
-                arena.SetupArena();
+                arena.SetupArena(gameConfiguration.ArenaSize);
             }
             else
             {
                 Debug.LogError("Arena prefab not found");
             }
-
-            ResetPlayers();
         }
 
         public void MovePlayers()
         {
             bool end = true;
 
-            foreach (Player player in GameManager.instance.players) 
+            foreach (Player player in players) 
             {
                 if (player != null)
                 {
@@ -53,34 +155,37 @@ namespace ProjectScopes
                 }
             }
 
-            arena.RedrawArena();
+            arena.RedrawArena(this);
 
             if (end)
             {
+                this.enabled = false;
                 Invoke("Restart", 1.5f);
-                GameManager.instance.enabled = false;
             }
         }
 
 
-        void ResetPlayers()
+        void HandlePause()
         {
-            int ind = 0;
-            foreach (PlayerInitialData player in GameManager.instance.GameConfiguration.Players)
+            pause = !pause;
+
+            GameObject pausePane = GameObject.Find("PausePanel");
+
+            if (pausePane)
             {
-                if (player != null) //if (player.IsActive)
-                {
-                    GameManager.instance.players[ind].Reset();
-                    ind++;
-                }
+                pausePane.transform.GetComponent<Canvas>().enabled = pause;
+            }
+            else
+            {
+                Debug.LogError("no PausePanel object");
             }
         }
 
         //Restart reloads the scene when called.
         private void Restart ()
         {
-            //Load the last scene loaded, in this case Main, the only scene in the game.
-            Application.LoadLevel (Application.loadedLevel);
+            //Load Main scene
+            SceneManager.LoadScene("Main");
         }
     }
 
