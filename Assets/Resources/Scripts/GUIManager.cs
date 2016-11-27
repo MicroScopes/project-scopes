@@ -54,7 +54,7 @@ public class GUIManager: MonoBehaviour
      * @details The configurator object is used by GameManager to read the
      *          initial game configuration.
      */
-    public static Configurator configurator = new Configurator();
+    public static Configurator configurator;
 
     // Add all necessary action listeners to panel components.
     private void AddPlayerActionListeners(GameObject root, int id)
@@ -94,6 +94,9 @@ public class GUIManager: MonoBehaviour
     // initial configuration.
     private void Awake()
     {
+        // Initialize configurator with the default data.
+        configurator = new Configurator();
+
         // Set initial screen size.
         Screen.SetResolution(ScreenWidth, ScreenHeight, Fullscreen);
 

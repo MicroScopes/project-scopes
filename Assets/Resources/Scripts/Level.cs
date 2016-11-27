@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.SceneManagement;
@@ -195,9 +196,17 @@ namespace ProjectScopes
         private void Restart ()
         {
             //Load Main scene
-            SceneManager.LoadScene("Main");
+            if (!GameManager.instance.gameOver)
+            {
+                SceneManager.LoadScene("Main");
+            }
+            else
+            {
+                ShowFinalScreen();
+            }
         }
 
+        // Starts cunter and runs it between scenes.
         private IEnumerator CountDown()
         {
             pause = true;
@@ -219,6 +228,60 @@ namespace ProjectScopes
 
             countdownPanel.transform.GetComponent<Canvas>().enabled = false;
             pause = false;
+        }
+
+        // Show screen with final game results.
+        private void ShowFinalScreen()
+        {
+            GameObject finalScreen = GameObject.Find("FinalScreen");
+            finalScreen.GetComponent<Canvas>().enabled = true;
+
+            Configurator configurator = GUIManager.configurator;
+            GameObject board = GameObject.Find("Board");
+
+            List<KeyValuePair<string, int>> playerScores = PlayerScores();
+
+            int i = 1;
+            foreach (Player player in players)
+            {
+                string nicknameObject = "Player" + i + "NicknameText";
+                Text nickname = GameObject.Find(nicknameObject).
+                                GetComponent<Text>();
+                nickname.color = player.PlayerColor;
+                nickname.text = playerScores[i - 1].Key;
+
+                string scoreObject = "Player" + i + "ScoreText";
+                Text score = GameObject.Find(scoreObject).
+                             GetComponent<Text>();
+                score.color = player.PlayerColor;
+                score.text = playerScores[i - 1].Value.ToString();
+
+                ++i;
+            }
+
+            Button playeAgain = GameObject.Find("PlayAgainButton").
+                                GetComponent<Button>();
+            playeAgain.onClick.AddListener(() =>
+                                           SceneManager.LoadScene("GUI"));
+        }
+
+        // Gets the player nicknames and scores and sorts them.
+        private List<KeyValuePair<string, int>> PlayerScores()
+        {
+            // TOBEREMOVED
+            System.Random rnd = new System.Random();
+            List<KeyValuePair<string, int>> playerScores =
+                                                new List<KeyValuePair<string, int>>();
+            foreach (Player player in players)
+            {
+                // TODO Replace rnd.Next() with player.Score
+                playerScores.Add(new KeyValuePair<string, int>
+                                 (player.Nickname, rnd.Next(0, 60)));
+            }
+            playerScores.Sort((a, b) => a.Value.CompareTo(b.Value));
+            playerScores.Reverse();
+
+            return playerScores;
         }
     }
 

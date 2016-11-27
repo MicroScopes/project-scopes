@@ -42,6 +42,8 @@ namespace ProjectScopes
 
         private int gameLevel;
 
+        public bool gameOver = false;
+
 		void Awake ()
 		{
             // Implementation of singleton pattern
@@ -72,7 +74,8 @@ namespace ProjectScopes
             //Call SetupLevel only to main instance of GameManager
             if (instance == this)
             {
-                if (CheckIfGameOver())
+                gameOver = CheckIfGameOver();
+                if (gameOver)
                 {
                     GameOver();
                 }
@@ -98,10 +101,10 @@ namespace ProjectScopes
         void GameOver()
         {
             gameLevel = 0;
-            Debug.Log("GAME OVER");
+            //Debug.Log("GAME OVER");
 
-            SceneManager.LoadScene("GUI");
+            //SceneManager.LoadScene("GUI");
         }
-	}
+    }
 
 }
