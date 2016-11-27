@@ -70,7 +70,6 @@ public class Configurator
      */
     public Configurator()
     {
-        Debug.Log("Configurator()");
         // Default values of players initial data is 'normal'.
         InitialArenaSize = 1;
         InitialPlayerSpeed = 1;
