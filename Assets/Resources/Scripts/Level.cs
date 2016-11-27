@@ -2,11 +2,18 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 namespace ProjectScopes
 { 
     public class Level : MonoBehaviour 
     {
+        // Countdown between levels starts with this value.
+        private const int Counter = 3;
+
+        // The duration between two counter values.
+        private const float Timeout = 1.0f;
+
         private Arena arena;
         public List<Player> players;
         private Configurator gameConfiguration;
@@ -38,6 +45,9 @@ namespace ProjectScopes
         {
             this.enabled = true;
             SetupLevel();
+
+            MovePlayers();
+            StartCoroutine(CountDown());
         }
     	
         // Updates frames depending on frameRate 
@@ -186,6 +196,29 @@ namespace ProjectScopes
         {
             //Load Main scene
             SceneManager.LoadScene("Main");
+        }
+
+        private IEnumerator CountDown()
+        {
+            pause = true;
+
+            GameObject countdownPanel = GameObject.Find("CountdownPanel");
+            countdownPanel.transform.GetComponent<Canvas>().enabled = true;
+
+            int value = Counter;
+            while (value > 0)
+            {
+                countdownPanel.GetComponentInChildren<Text>().text = value.ToString();
+                yield return new WaitForSeconds(Timeout);
+
+                --value;
+            }
+
+            countdownPanel.GetComponentInChildren<Text>().text = "GO!";
+            yield return new WaitForSeconds(Timeout / 4.0f);
+
+            countdownPanel.transform.GetComponent<Canvas>().enabled = false;
+            pause = false;
         }
     }
 
