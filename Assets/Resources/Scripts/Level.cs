@@ -15,6 +15,9 @@ namespace ProjectScopes
         // The duration between two counter values.
         private const float Timeout = 1.0f;
 
+        // Determines whether countdown is running.
+        private bool countdown = false; 
+
         private Arena arena;
         public List<Player> players;
         private Configurator gameConfiguration;
@@ -58,7 +61,7 @@ namespace ProjectScopes
             {
                 nextFrame = Time.time + frameRate;
 
-                if (!pause)
+                if (!pause && !countdown)
                 {
                     MovePlayers();
                 }
@@ -66,7 +69,10 @@ namespace ProjectScopes
 
             if(Input.GetKeyDown(KeyCode.Space))
             {
-                HandlePause();
+                if (!countdown)
+                {
+                    HandlePause();
+                }
             }
 
             // to delete - for test
@@ -209,7 +215,7 @@ namespace ProjectScopes
         // Starts cunter and runs it between scenes.
         private IEnumerator CountDown()
         {
-            pause = true;
+            countdown = true;
 
             GameObject countdownPanel = GameObject.Find("CountdownPanel");
             countdownPanel.transform.GetComponent<Canvas>().enabled = true;
@@ -227,7 +233,7 @@ namespace ProjectScopes
             yield return new WaitForSeconds(Timeout / 4.0f);
 
             countdownPanel.transform.GetComponent<Canvas>().enabled = false;
-            pause = false;
+            countdown = false;
         }
 
         // Show screen with final game results.
