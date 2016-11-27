@@ -90,7 +90,7 @@ namespace ProjectScopes
 
         bool CheckIfGameOver()
         {
-            if (gameLevel >= 4)
+            if (gameLevel >= 1)
             {
                 return true;
             }

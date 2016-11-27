@@ -94,9 +94,6 @@ public class GUIManager: MonoBehaviour
     // initial configuration.
     private void Awake()
     {
-        // Initialize configurator with the default data.
-        configurator = new Configurator();
-
         // Set initial screen size.
         Screen.SetResolution(ScreenWidth, ScreenHeight, Fullscreen);
 
@@ -104,20 +101,48 @@ public class GUIManager: MonoBehaviour
         disabledPanel = GUIHelper.Load("Prefabs/PlayerDisabledPanel");
         enabledPanel = GUIHelper.Load("Prefabs/PlayerEnabledPanel");
 
-        // Enable minimum number of players. The MinNoOfPlayer value can be
-        // found in the Configurator data class. The initially enabled players
-        // will be subsequently inserted on 0 to MinNoOfPlayers positions.
-        int i = 0;
-        while (i < Configurator.MinNoOfPlayers)
+        // The game is started for the first time. Create initial configuration.
+        if (configurator == null)
         {
-            EnablePlayer(++i);
+            // Initialize configurator with the default data.
+            configurator = new Configurator();
+
+            // Enable minimum number of players. The MinNoOfPlayer value can be
+            // found in the Configurator data class. The initially enabled players
+            // will be subsequently inserted on 0 to MinNoOfPlayers positions.
+            int i = 0;
+            while (i < Configurator.MinNoOfPlayers)
+            {
+                EnablePlayer(++i);
+            }
+
+            // Attach action listeners to all of the rest disabled panels.
+            while (i < Configurator.MaxNoOfPlayers)
+            {
+                int id = (i++) + 1;
+                AddPlayerActionListeners(GUIHelper.Find(disabledPanel.name, id),
+                                         id);
+            }
         }
-        // Attach action listeners to all of the rest disabled panels.
-        while (i < Configurator.MaxNoOfPlayers)
+        // Restore the configuration from the previous game.
+        else
         {
-            int id = (i++) + 1;
-            AddPlayerActionListeners(GUIHelper.Find(disabledPanel.name, id),
-                                     id);
+            int i = 0;
+            foreach (PlayerInitialData player in configurator.Players)
+            {
+                // Check which players has been enabled and load their panels.
+                if (player != null)
+                {
+                    EnableExistingPlayer(++i);
+                }
+                // Add the listeners for the rest of them.
+                else
+                {
+                    int id = ++i;
+                    AddPlayerActionListeners(GUIHelper.Find(disabledPanel.name, id),
+                                             id);
+                }
+            }
         }
 
         // Set initial value and add action listeners to sliders and start
@@ -171,6 +196,14 @@ public class GUIManager: MonoBehaviour
         configurator.RemovePlayer(id - 1);
 
         LoadPanel(disabledPanel, enabledPanel, id);
+    }
+
+    // Loads the PlayerEnabledPanel of the player that has been enabled in the
+    // previous game.
+    private void EnableExistingPlayer(int id)
+    {
+        // Display panel on the GUI.
+        LoadPanel(enabledPanel, disabledPanel, id);
     }
 
     // Loads PlayerEnabledPanel in place of PlayerDisabledPanel.
