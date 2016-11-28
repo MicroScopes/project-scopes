@@ -43,7 +43,7 @@ namespace ProjectScopes
     	// Initialization
         void Awake() 
         {
-            // empty?
+            // empty
     	}
 
 
@@ -67,7 +67,7 @@ namespace ProjectScopes
         }
 
         // Checks collision and draws each active player on main texture
-        public void RedrawArena (Level level)
+        public void RedrawArena (GameManager level)
         {
             foreach (Player player in level.players)
             {
@@ -107,9 +107,10 @@ namespace ProjectScopes
                                 if (i % 2 == 0 && j % 2 == 1)
                                 {
                                     // Check collision in front of the line
-                                    if (CheckCollision(posX + collisionFactor * deltaY, posY + collisionFactor * deltaX))
+                                    if (player.IsActive && CheckCollision(posX + collisionFactor * deltaY, posY + collisionFactor * deltaX))
                                     {
                                         player.IsActive = false;
+                                        level.AddPoints();
                                     }
                                 }
 
@@ -150,7 +151,7 @@ namespace ProjectScopes
 
             mainPixelMap[index] = col;
     	}
-
+            
         // Maps 2D position coordinates to pixel table index
         int PositionToPixMapIndex(float x, float y)
         {

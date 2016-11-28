@@ -1,109 +1,345 @@
-﻿/*!
- * @file GameManager.cs
- * @brief Contains definition of GameManager class.
- * @author Marcin
- */
-
-//==================================================
-//               D I R E C T I V E S
-//==================================================
-
-using UnityEngine;
+﻿using UnityEngine;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
-//==================================================
-//                 N A M E S P A C E
-//==================================================
-
-/*!
- * @brief A global namespace for project-scopes.
- * @detail Contains all project-scopes related classes.
- */
 namespace ProjectScopes
-{
+{ 
+    public class GameManager : MonoBehaviour 
+    {
+        // Countdown between levels starts with this value.
+        private const int Counter = 3;
 
-//==================================================
-//                    C L A S S
-//==================================================
+        // The duration between two counter values.
+        private const float Timeout = 1.0f;
 
-/*!
- * @brief Main manager of the game
- * 
- * @details GameManager class is based on singleton pattern and contains players list
- *          and initial game configuration. It is set by default to disable until it gets
- *          initial configuration and players data from GUI.
- */
+        // Determines whether countdown is running.
+        private bool countdown = false; 
 
-	public class GameManager : MonoBehaviour 
-	{
-		public static GameManager instance = null;
+        private bool roundEndDelay = false; 
 
-        private int gameLevel;
+        private Arena arena;
+        public List<Player> players;
+        private Configurator gameConfiguration;
 
-        public bool gameOver = false;
+        // Variables used for simple frame rate control
+        private float frameRate;
+        private float nextFrame;
 
-		void Awake ()
-		{
-            // Implementation of singleton pattern
-            if (instance == null)
-			{
-				instance = this;
+        private bool pause;
 
-                // Object will not be destroyed after scene reload
-                DontDestroyOnLoad(gameObject);
-			}
-			else if (instance != this)
-			{
-                Destroy(gameObject);    
-			}
+        private bool gameOver;
 
-            gameLevel = 1;
-		}
-
-        // Called after enabling game manager
-        void Start()
+        // Use this for initialization
+        void Start ()
         {
-            
+            gameConfiguration = GUIManager.configurator;
+
+            frameRate = 0.01f;
+            nextFrame = 0.0f;
+            pause = false;
+
+            Screen.SetResolution(gameConfiguration.ArenaSize, gameConfiguration.ArenaSize, false);
+
+            LoadArena();
+
+            // Creates a default set of 6 inactive players
+            LoadPlayers();
+
+            StartRound();
         }
-		
-        //This is called each time a scene is loaded.
-        void OnLevelWasLoaded()
+
+
+        public void LoadArena()
         {
-            //Call SetupLevel only to main instance of GameManager
-            if (instance == this)
+            arena = Resources.Load("Prefabs/Arena", typeof(Arena)) as Arena;
+
+            if (arena)
             {
-                gameOver = CheckIfGameOver();
-                if (gameOver)
+                Instantiate(arena);
+            }
+            else
+            {
+                Debug.LogError("Arena prefab not found");
+            }
+        }
+
+        // Loads Player prefab and Instantiate players set
+        private void LoadPlayers()
+        {
+            Player player = Resources.Load("Prefabs/Player", typeof(Player)) as Player;
+
+            if (player)
+            {
+                for (int i = 0; i < gameConfiguration.CurrentNoOfPlayers; i++)
                 {
-                    GameOver();
+                    players.Add(Instantiate(player));
                 }
-                else
+
+                int j = 0;
+                foreach (PlayerInitialData p in gameConfiguration.Players)
                 {
-                    Debug.Log("level: " + gameLevel);
-                    gameLevel++;
+                    if (p != null)
+                    {
+                        KeyCode[] keys = { p.LeftKey, p.RightKey };
+                        players[j].SetupPlayer(p.Nickname, p.Color, keys);
+                        players[j].IsActive = true;
+                        j++;
+                    }
+                }
+            }
+            else
+            {
+                Debug.LogError("Player prefab not found");
+            }
+        }
+
+
+        void StartRound()
+        {
+            arena.SetupArena(gameConfiguration.ArenaSize);
+
+            ShufflePlayers();
+
+            MovePlayers();
+            StartCoroutine(CountDown());
+        }
+    	
+        // Updates frames depending on frameRate 
+        void Update () 
+        {
+            if (Time.time > nextFrame)
+            {
+                nextFrame = Time.time + frameRate;
+
+                if (!pause && !countdown)
+                {
+                    MovePlayers();
+                }
+            }
+
+            if(Input.GetKeyDown(KeyCode.Space))
+            {
+                if (!countdown)
+                {
+                    HandlePause();
+                }
+            }
+
+
+            // to delete - for test
+            if(Input.GetKeyDown(KeyCode.G))
+            {
+                foreach (Player player in players) 
+                {
+                    player.DoubleSize ();
+                }
+            }
+
+            if(Input.GetKeyDown(KeyCode.H))//
+            {
+                foreach (Player player in players) 
+                {
+                    player.ReduceSize ();
+                }
+            }
+
+            if(Input.GetKeyDown(KeyCode.J))
+            {
+                foreach (Player player in players) 
+                {
+                    player.IncreaseSpeed ();
+                }
+            }
+
+            if(Input.GetKeyDown(KeyCode.K))
+            {
+                foreach (Player player in players) 
+                {
+                    player.ReduceSpeed ();
                 }
             }
         }
 
 
-        bool CheckIfGameOver()
+        public void MovePlayers()
         {
-            if (gameLevel >= 4)
+            int end = 0;
+
+            foreach (Player player in players) 
             {
-                return true;
+                player.Turn();
+
+                if (player.IsActive)
+                {
+                    end++;
+                }
             }
 
-            return false;
+            arena.RedrawArena(this);
+
+            if (!roundEndDelay && end <= 1)
+            {
+                CheckIfGameOver();
+            }
         }
 
-        void GameOver()
-        {
-            gameLevel = 0;
-            //Debug.Log("GAME OVER");
 
-            //SceneManager.LoadScene("GUI");
+        void CheckIfGameOver()
+        {
+            if (gameOver)
+            {
+                this.enabled = false;
+                ShowFinalScreen();
+            }
+            else
+            {
+                StartCoroutine(EndDelay(2));
+            }
+        }
+
+
+        private IEnumerator EndDelay(int sec)
+        {
+            roundEndDelay = true;
+            yield return new WaitForSeconds(sec);
+
+            ResetPlayers();
+            roundEndDelay = false;
+            StartRound();
+        }
+
+
+        public void AddPoints()
+        {
+            foreach (Player player in players)
+            {
+                if (player.IsActive)
+                {
+                    if (++player.Points >= gameConfiguration.CurrentNoOfPlayers * 5)
+                    {
+                        gameOver = true;
+                    }
+                }
+            }
+        }
+
+
+        void ResetPlayers()
+        {
+            foreach (Player player in players) 
+            {
+                player.Reset();
+                player.IsActive = true;
+            }
+        }
+
+
+        void HandlePause()
+        {
+            pause = !pause;
+
+            GameObject pausePane = GameObject.Find("PausePanel");
+
+            if (pausePane)
+            {
+                pausePane.transform.GetComponent<Canvas>().enabled = pause;
+            }
+            else
+            {
+                Debug.LogError("no PausePanel object");
+            }
+        }
+
+
+        // Starts cunter and runs it between scenes.
+        private IEnumerator CountDown()
+        {
+            countdown = true;
+
+            GameObject countdownPanel = GameObject.Find("CountdownPanel");
+            countdownPanel.transform.GetComponent<Canvas>().enabled = true;
+
+            int value = Counter;
+            while (value > 0)
+            {
+                countdownPanel.GetComponentInChildren<Text>().text = value.ToString();
+                yield return new WaitForSeconds(Timeout);
+
+                --value;
+            }
+
+            countdownPanel.GetComponentInChildren<Text>().text = "GO!";
+            yield return new WaitForSeconds(Timeout / 4.0f);
+
+            countdownPanel.transform.GetComponent<Canvas>().enabled = false;
+            countdown = false;
+        }
+
+
+        // Show screen with final game results.
+        private void ShowFinalScreen()
+        {
+            GameObject finalScreen = GameObject.Find("FinalScreen");
+            finalScreen.GetComponent<Canvas>().enabled = true;
+
+            List<KeyValuePair<string, int>> playerScores = PlayerScores();
+
+            int i = 1;
+            foreach (Player player in players)
+            {
+                string nicknameObject = "Player" + i + "NicknameText";
+                Text nickname = GameObject.Find(nicknameObject).
+                                GetComponent<Text>();
+                nickname.color = player.PlayerColor;
+                nickname.text = playerScores[i - 1].Key;
+
+                string scoreObject = "Player" + i + "ScoreText";
+                Text score = GameObject.Find(scoreObject).
+                             GetComponent<Text>();
+                score.color = player.PlayerColor;
+                score.text = playerScores[i - 1].Value.ToString();
+
+                ++i;
+            }
+
+            Button playeAgain = GameObject.Find("PlayAgainButton").
+                                GetComponent<Button>();
+            playeAgain.onClick.AddListener(() =>
+                                           SceneManager.LoadScene("GUI"));
+        }
+
+
+        // Gets the player nicknames and scores and sorts them.
+        private List<KeyValuePair<string, int>> PlayerScores()
+        {
+            // TOBEREMOVED
+            //System.Random rnd = new System.Random();
+            List<KeyValuePair<string, int>> playerScores =
+                                                new List<KeyValuePair<string, int>>();
+            foreach (Player player in players)
+            {
+                // TODO Replace rnd.Next() with player.Score
+                playerScores.Add(new KeyValuePair<string, int>
+                    (player.Nickname, player.Points));
+            }
+            playerScores.Sort((a, b) => a.Value.CompareTo(b.Value));
+            playerScores.Reverse();
+
+            return playerScores;
+        }
+
+
+        void ShufflePlayers()  
+        { 
+            for (int i = players.Count - 1; i > 0; i--) {
+                int r = UnityEngine.Random.Range(0, i + 1);
+                Player tmp = players[i];
+                players[i] = players[r];
+                players[r] = tmp;
+            }
         }
     }
 

@@ -11,7 +11,6 @@ namespace ProjectScopes
 
         private int playerSize;
         private float playerSpeed;
-        //private string playerNickname;
 
         private float playerDirection;
 
@@ -62,11 +61,7 @@ namespace ProjectScopes
 
             gameConfiguration = GUIManager.configurator;
     	}
-    	
-    	// Update is called once per frame
-    	/*void Update () {
-    	
-    	}*/
+
             
         public void SetupPlayer(string nickname, Color color, KeyCode[] movementKeys)
         {
@@ -82,11 +77,8 @@ namespace ProjectScopes
             playerDirection = Random.Range(0.0f, 2.0f); 
 
             playerColor = color;
-            //playerNickname = nickname;
             Nickname = nickname;
-
-            //keyLeft = movementKeys[0];
-            //keyRight = movementKeys[1];
+            Points = 0;
 
             MovementKeys = movementKeys;
 
@@ -102,6 +94,28 @@ namespace ProjectScopes
                 renderer = head.GetComponent<MeshRenderer> ();
                 renderer.material.color = playerColor + new Color(0.2f, 0.2f, 0.2f);
             }
+        }
+
+
+        public void Reset()
+        {
+            playerPos = new Vector2(Random.Range(20.0f, arenaSize - 20),
+                                    Random.Range(20.0f, arenaSize - 20));
+            
+            playerSize = gameConfiguration.PlayerSize;
+            playerSpeed = gameConfiguration.PlayerSpeed;
+            playerDirection = Random.Range(0.0f, 2.0f);
+
+            this.transform.position = new Vector3(-1.0f, -1.0f, 0.0f);
+
+            foreach (GameObject head in borderHeads)
+            {
+                head.transform.position = new Vector3(-1.0f, -1.0f, 0.0f);
+            }
+
+            holeDelay = 0;
+            holeTimerDelay = 0;
+            visible = false;
         }
 
 
@@ -298,6 +312,12 @@ namespace ProjectScopes
         }
 
         public string Nickname
+        {
+            set;
+            get;
+        }
+
+        public int Points
         {
             set;
             get;
