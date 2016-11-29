@@ -283,6 +283,7 @@ namespace ProjectScopes
         // Show screen with final game results.
         private void ShowFinalScreen()
         {
+            Debug.Log("Final Screen");
             GameObject finalScreen = GameObject.Find("FinalScreen");
             finalScreen.GetComponent<Canvas>().enabled = true;
 
@@ -311,6 +312,10 @@ namespace ProjectScopes
                                 GetComponent<Button>();
             playeAgain.onClick.AddListener(() =>
                                            SceneManager.LoadScene("GUI"));
+
+            Button exit = GameObject.Find("ExitButton").
+                          GetComponent<Button>();
+            exit.onClick.AddListener(() => QuitGame());
         }
 
         void ShufflePlayers()  
@@ -321,6 +326,14 @@ namespace ProjectScopes
                 players[i] = players[r];
                 players[r] = tmp;
             }
+        }
+
+        // Quit the game.
+        private void QuitGame()
+        {
+            // Uncomment if you want to test this functionality in Unity editor.
+            //UnityEditor.EditorApplication.isPlaying = false;
+            Application.Quit();
         }
     }
 

@@ -149,7 +149,7 @@ public class GUIManager: MonoBehaviour
         // button components.
         InitializeArenaSizeSlider();
         InitializePlayersSettingsSliders();
-        InitializeStartButton();
+        InitializeButtons();
     }
 
     // Creates the given component and all its children based on the pattern
@@ -282,6 +282,16 @@ public class GUIManager: MonoBehaviour
 
     }
 
+    // Adds action listener to the start button.
+    private void InitializeButtons()
+    {
+        Button start = GUIHelper.Find<Button>(GUIHelper.Find("StartButton"));
+        start.onClick.AddListener(() => StartGame());
+
+        Button exit = GUIHelper.Find<Button>(GUIHelper.Find("ExitButton"));
+        exit.onClick.AddListener(() => QuitGame());
+    }
+
     // Sets the initial value and adds action listener to the initial players
     // speed and size sliders.
     private void InitializePlayersSettingsSliders()
@@ -297,13 +307,6 @@ public class GUIManager: MonoBehaviour
         size.value = configurator.InitialPlayerSize;
         size.onValueChanged.AddListener
                             (delegate{SetInitialPlayerSize((int)size.value);});
-    }
-
-    // Adds action listener to the start button.
-    private void InitializeStartButton()
-    {
-        Button start = GUIHelper.Find<Button>(GUIHelper.Find("StartButton"));
-        start.onClick.AddListener(() => StartGame());
     }
 
     // Loads one panel in place of another.
@@ -358,6 +361,14 @@ public class GUIManager: MonoBehaviour
     private void StartGame()
     {
         SceneManager.LoadScene("Main");
+    }
+
+    // Quit the game.
+    private void QuitGame()
+    {
+        // Uncomment if you want to test this functionality in Unity editor.
+        //UnityEditor.EditorApplication.isPlaying = false;
+        Application.Quit();
     }
 }
 
