@@ -4,6 +4,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using System.Linq;
 
 namespace ProjectScopes
 { 
@@ -285,22 +286,23 @@ namespace ProjectScopes
             GameObject finalScreen = GameObject.Find("FinalScreen");
             finalScreen.GetComponent<Canvas>().enabled = true;
 
-            List<KeyValuePair<string, int>> playerScores = PlayerScores();
+            List<Player> sortedPlayers = players.OrderByDescending
+                                                 (o => o.Points).ToList();
 
             int i = 1;
-            foreach (Player player in players)
+            foreach (Player player in sortedPlayers)
             {
                 string nicknameObject = "Player" + i + "NicknameText";
                 Text nickname = GameObject.Find(nicknameObject).
                                 GetComponent<Text>();
                 nickname.color = player.PlayerColor;
-                nickname.text = playerScores[i - 1].Key;
+                nickname.text = player.Nickname;
 
                 string scoreObject = "Player" + i + "ScoreText";
                 Text score = GameObject.Find(scoreObject).
                              GetComponent<Text>();
                 score.color = player.PlayerColor;
-                score.text = playerScores[i - 1].Value.ToString();
+                score.text = player.Points.ToString();
 
                 ++i;
             }
@@ -310,27 +312,6 @@ namespace ProjectScopes
             playeAgain.onClick.AddListener(() =>
                                            SceneManager.LoadScene("GUI"));
         }
-
-
-        // Gets the player nicknames and scores and sorts them.
-        private List<KeyValuePair<string, int>> PlayerScores()
-        {
-            // TOBEREMOVED
-            //System.Random rnd = new System.Random();
-            List<KeyValuePair<string, int>> playerScores =
-                                                new List<KeyValuePair<string, int>>();
-            foreach (Player player in players)
-            {
-                // TODO Replace rnd.Next() with player.Score
-                playerScores.Add(new KeyValuePair<string, int>
-                    (player.Nickname, player.Points));
-            }
-            playerScores.Sort((a, b) => a.Value.CompareTo(b.Value));
-            playerScores.Reverse();
-
-            return playerScores;
-        }
-
 
         void ShufflePlayers()  
         { 
