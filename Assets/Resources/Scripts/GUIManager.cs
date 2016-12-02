@@ -128,7 +128,7 @@ public class GUIManager: MonoBehaviour
         else
         {
             int i = 0;
-            foreach (PlayerInitialData player in configurator.Players)
+            foreach (PlayerInitialData player in configurator.PlayersData)
             {
                 // Check which players has been enabled and load their panels.
                 if (player != null)
@@ -165,7 +165,7 @@ public class GUIManager: MonoBehaviour
         panel.transform.localScale = pattern.transform.localScale;
         GUIHelper.RenamePlayerComponent(panel, id);
         GUIHelper.SetPlayerComponentColor(panel, pattern);
-        GUIHelper.SetInitialPlayerData(panel, configurator.Players[id - 1]);
+        GUIHelper.SetInitialPlayerData(panel, configurator.PlayersData[id - 1]);
 
         // Add action listeners to the panel components.
         AddPlayerActionListeners(panel, id);
@@ -214,19 +214,19 @@ public class GUIManager: MonoBehaviour
 
         // Fill player data with the initial values.
         PlayerInitialData player = GUIHelper.PlayerInitialData[id - 1];
-        configurator.Players[id - 1].Nickname = player.Nickname;
-        configurator.Players[id - 1].Color = player.Color;
-        configurator.Players[id - 1].LeftKey = KeyCode.None;
+        configurator.PlayersData[id - 1].Nickname = player.Nickname;
+        configurator.PlayersData[id - 1].Color = player.Color;
+        configurator.PlayersData[id - 1].LeftKey = KeyCode.None;
         if (GUIHelper.IsKeySupported(player.LeftKey) &&
-            !GUIHelper.IsKeyInUsed(player.LeftKey, configurator.Players))
+            !GUIHelper.IsKeyInUsed(player.LeftKey, configurator.PlayersData))
         {
-            configurator.Players[id - 1].LeftKey = player.LeftKey;
+            configurator.PlayersData[id - 1].LeftKey = player.LeftKey;
         }
-        configurator.Players[id - 1].RightKey = KeyCode.None;
+        configurator.PlayersData[id - 1].RightKey = KeyCode.None;
         if (GUIHelper.IsKeySupported(player.RightKey)  &&
-            !GUIHelper.IsKeyInUsed(player.RightKey, configurator.Players))
+            !GUIHelper.IsKeyInUsed(player.RightKey, configurator.PlayersData))
         {
-            configurator.Players[id - 1].RightKey = player.RightKey;
+            configurator.PlayersData[id - 1].RightKey = player.RightKey;
         }
 
         // Display panel on the GUI.
@@ -245,7 +245,7 @@ public class GUIManager: MonoBehaviour
 
                 // Check if key is supported and noone is using it already.
                 if (GUIHelper.IsKeySupported(keyCode) &&
-                    !GUIHelper.IsKeyInUsed(keyCode, configurator.Players))
+                    !GUIHelper.IsKeyInUsed(keyCode, configurator.PlayersData))
                 {
                     // Update GUI with key output format.
                     GUIHelper.UpdateKeyButtonText(keyButton, keyCode);
@@ -253,12 +253,12 @@ public class GUIManager: MonoBehaviour
                     // Determine what key was updated by checking parent name.
                     if (keyButton.name.Contains("Left"))
                     {
-                        configurator.Players[id - 1].LeftKey = keyCode;
+                        configurator.PlayersData[id - 1].LeftKey = keyCode;
                         GUIHelper.PlayerInitialData[id - 1].LeftKey = keyCode;
                     }
                     else
                     {
-                        configurator.Players[id - 1].RightKey = keyCode;
+                        configurator.PlayersData[id - 1].RightKey = keyCode;
                         GUIHelper.PlayerInitialData[id - 1].RightKey = keyCode;
                     }
                 }
@@ -339,9 +339,9 @@ public class GUIManager: MonoBehaviour
     {
         if (nickname.Equals(""))
         {
-            nickname = configurator.Players[id - 1].Nickname;
+            nickname = configurator.PlayersData[id - 1].Nickname;
         }
-        configurator.Players[id - 1].Nickname = nickname;
+        configurator.PlayersData[id - 1].Nickname = nickname;
         GUIHelper.PlayerInitialData[id - 1].Nickname = nickname;
     }
 

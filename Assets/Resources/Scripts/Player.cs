@@ -1,9 +1,41 @@
-﻿using UnityEngine;
+﻿/*!
+ * @file    Player.cs
+ * @brief   Contains Player class definition.
+ * @author  Marcin
+ */
+
+//==================================================
+//               D I R E C T I V E S
+//==================================================
+
+using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 
+//==================================================
+//                 N A M E S P A C E
+//==================================================
+
+/*!
+ * @brief   A global namespace for project-scopes.
+ * @detail  Contains all project-scopes related classes.
+ */
+
 namespace ProjectScopes
 {
+
+//==================================================
+//                    C L A S S
+//==================================================
+
+/*!
+ * @brief   Player handles all player specific attributes and methods.
+ * 
+ * @details Player class holds all player main settings like size, speed, nickname and color. 
+ *          It handles movement keys specific for each player and calculates the angle in which the player is moving.
+ *          It measures the time, when player becomes invisible for a moment and manage of head object behavior.                  
+ */
+
     public class Player : MonoBehaviour 
     {
         private Vector2 playerPos;
@@ -14,36 +46,38 @@ namespace ProjectScopes
 
         private float playerDirection;
 
-        private int arenaSize;
+        private bool active = false;
+        private bool visible = false;
 
-        private bool active;
-        private bool visible;
-
-        private int holeDelay;
-        private int holeTimerDelay;
-        private int holeTimer;
-        private int holeSize;
+        private int holeDelay = 0;
+        private int holeTimerDelay = 0;
+        private int holeTimer = 1000;
+        private int holeSize = 50;
 
         private GameObject borderHead;
         private List<GameObject> borderHeads;
 
+        private int arenaSize;
         private float arenaScalar;
-        private float angleScalar;
+        private float angleScalar = 0.015f;
 
         private Configurator gameConfiguration;
 
     	// Use this for initialization
         void Awake () 
         {
-            holeDelay = 0;
-            holeTimerDelay = 0;
-            holeTimer = 1000;
-            holeSize = 50;
-
-            active = false;
-            visible = false;
-
+            gameConfiguration = GUIManager.configurator;
             borderHeads = new List<GameObject>();
+
+            arenaSize = gameConfiguration.ArenaSize;
+            arenaScalar = 6.0f / arenaSize;
+
+            LoadHead();
+    	}
+
+
+        private void LoadHead()
+        {
             borderHead = Resources.Load("Prefabs/PlayerHead", typeof(GameObject)) as GameObject;
 
             if (borderHead)
@@ -58,17 +92,11 @@ namespace ProjectScopes
             {
                 Debug.LogError("PlayerHead prefab not found");
             }
-
-            gameConfiguration = GUIManager.configurator;
-    	}
-
+        }
             
+
         public void SetupPlayer(string nickname, Color color, KeyCode[] movementKeys)
         {
-            arenaSize = gameConfiguration.ArenaSize;
-            arenaScalar = 6.0f / arenaSize;
-            angleScalar = 0.015f;
-
             playerPos = new Vector2(Random.Range(20.0f, arenaSize - 20),
                                     Random.Range(20.0f, arenaSize - 20));
 
@@ -119,7 +147,7 @@ namespace ProjectScopes
         }
 
 
-        public void Turn ()
+        public void Move()
         {
             if (active) 
             {
@@ -159,9 +187,10 @@ namespace ProjectScopes
             }
         }
 
+
         public void MoveHead()
         {
-            int corner = 0;
+            int cornerIndex = 0;
 
             this.transform.position = new Vector3(playerPos.x*arenaScalar, playerPos.y*arenaScalar, 0.0f);
 
@@ -170,21 +199,28 @@ namespace ProjectScopes
                 head.transform.position = new Vector3(-1.0f, -1.0f, 0.0f);
             }
 
-            if (playerPos.y < playerSize) {
-                corner = 1;
+            if (playerPos.y < playerSize) 
+            {
+                cornerIndex += 1;
                 borderHeads[0].transform.position = new Vector3 (playerPos.x * arenaScalar, (playerPos.y + arenaSize) * arenaScalar, 0.0f);
-            } if (playerPos.y > arenaSize - playerSize) {
-                corner += 2;
+            } 
+            if (playerPos.y > arenaSize - playerSize) 
+            {
+                cornerIndex += 2;
                 borderHeads[0].transform.position = new Vector3 (playerPos.x * arenaScalar, (playerPos.y - arenaSize) * arenaScalar, 0.0f);
-            } if (playerPos.x < playerSize) {
-                corner += 4;
+            } 
+            if (playerPos.x < playerSize) 
+            {
+                cornerIndex += 4;
                 borderHeads[0].transform.position = new Vector3 ((playerPos.x + arenaSize) * arenaScalar, playerPos.y * arenaScalar, 0.0f);
-            } if (playerPos.x > arenaSize - playerSize) {
-                corner += 8;
+            } 
+            if (playerPos.x > arenaSize - playerSize) 
+            {
+                cornerIndex += 8;
                 borderHeads[0].transform.position = new Vector3 ((playerPos.x - arenaSize) * arenaScalar, playerPos.y * arenaScalar, 0.0f);
             }
 
-            switch (corner) 
+            switch (cornerIndex) 
             {
                 case 5:
                     borderHeads[0].transform.position = new Vector3 (playerPos.x * arenaScalar, (playerPos.y + arenaSize) * arenaScalar, 0.0f);
@@ -209,9 +245,13 @@ namespace ProjectScopes
             }    
         }
 
+
         public float PosX
         {
-            get { return playerPos.x; }
+            get 
+            {
+                return playerPos.x;
+            }
             set 
             { 
                 if (value < 0)
@@ -227,9 +267,12 @@ namespace ProjectScopes
 
         public float PosY
         {
-            get { return playerPos.y; }
+            get 
+            {
+                return playerPos.y;
+            }
             set 
-            { 
+            {
                 if (value < 0)
                 {
                     playerPos.y = (arenaSize + value) % arenaSize;
@@ -241,63 +284,88 @@ namespace ProjectScopes
             }
         }
 
-        public float PlayerSpeed
+        public float Speed
         {
-            get { return playerSpeed; }
+            get 
+            {
+                return playerSpeed;
+            }
         }
 
-        public int PlayerSize
+        public int Size
         {
-            get { return playerSize; }
+            get 
+            {
+                return playerSize;
+            }
         }
 
-        public float PlayerDirection
+        public float Direction
         {
-            get { return playerDirection; }
+            get 
+            {
+                return playerDirection;
+            }
         }
 
         public void IncreaseSpeed ()
         {
-            if (playerSpeed <= 8) {
+            if (playerSpeed <= 8)
+            {
                 playerSpeed *= 2;
             }
         }
 
         public void ReduceSpeed ()
         {
-            if (playerSpeed > 0.25f) {
+            if (playerSpeed > 0.25f)
+            {
                 playerSpeed /= 2.0f;
             }
         }
 
-        public Color PlayerColor
+        public Color Colour
         {
-            get { return playerColor; }
+            get
+            {
+                return playerColor;
+            }
         }
 
         public void DoubleSize()
         {
-            if (playerSize < 6) {
+            if (playerSize < 6)
+            {
                 playerSize += 1;
             }
-            else if (playerSize >= 6 && playerSize <= 24) {
+            else if (playerSize >= 6 && playerSize <= 24)
+            {
                 playerSize += 6;
             }
         }
 
         public void ReduceSize()
         {
-            if (playerSize > 6) {
+            if (playerSize > 6)
+            {
                 playerSize -= 6;
-            } else if (playerSize > 2 && playerSize <= 6) {
+            } 
+            else if (playerSize > 2 && playerSize <= 6)
+            {
                 playerSize -= 1;
             }
         }
 
         public bool IsActive
         {
-            get { return active; }
-            set { active = value; }
+            get
+            {
+                return active;
+            }
+            set
+            {
+                active = value;
+            }
         }
 
         public bool IsVisible()

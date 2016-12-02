@@ -41,7 +41,7 @@ public class Configurator
     private readonly List<int> ArenaSizes = new List<int> { 600, 800, 1000 };
 
     // List of all players initial data.
-    private List<PlayerInitialData> players = new List<PlayerInitialData>()
+    private List<PlayerInitialData> playersData = new List<PlayerInitialData>()
                                            {null, null, null, null, null, null};
 
     // Initial size of all players. User is able to specify whether the size
@@ -87,7 +87,7 @@ public class Configurator
     {
         ++CurrentNoOfPlayers;
 
-        players[id] = new PlayerInitialData();
+        playersData[id] = new PlayerInitialData();
     }
 
     /*!
@@ -163,11 +163,11 @@ public class Configurator
      * @details GUI can update player specific information depending on
      *          user input.
      */
-    public List<PlayerInitialData> Players
+    public List<PlayerInitialData> PlayersData
     {
         get
         {
-            return players;
+            return playersData;
         }
     }
 
@@ -208,7 +208,7 @@ public class Configurator
     {
         --CurrentNoOfPlayers;
 
-        players[id] = null;
+        playersData[id] = null;
     }
 }
 

@@ -1,7 +1,7 @@
 ﻿/*!
- * @file Arena.cs
- * @brief Contains Arena class definition.
- * @author Marcin
+ * @file    Arena.cs
+ * @brief   Contains Arena class definition.
+ * @author  Marcin
  */
 
 //==================================================
@@ -15,9 +15,10 @@ using UnityEngine;
 //==================================================
 
 /*!
- * @brief A global namespace for project-scopes.
- * @detail Contains all project-scopes related classes.
+ * @brief   A global namespace for project-scopes.
+ * @detail  Contains all project-scopes related classes.
  */
+
 namespace ProjectScopes
 {
 
@@ -26,11 +27,11 @@ namespace ProjectScopes
 //==================================================
 
 /*!
- * @brief MonoBehavior for Arena prefab
+ * @brief   Arena is responsible of main play area in game.
  * 
  * @details Arena class is a conponent script of Arena prefab. It handles setup of main arena texture, 
  *          drawing of player traces and check players collisions. It uses configuration data and
- *          players list directly from GameManager instance
+ *          players list directly from GameManager instance.
  */
 
     public class Arena : MonoBehaviour 
@@ -38,9 +39,9 @@ namespace ProjectScopes
         private int arenaSize;
 
     	private Color[] mainPixelMap;
-    	private Texture2D mainTexture;
+        private Texture2D mainArenaTexture;
 
-    	// Initialization
+    	
         void Awake() 
         {
             // empty
@@ -52,34 +53,35 @@ namespace ProjectScopes
             this.arenaSize = arenaSize;
 
             // Setup main texture
-            mainTexture = new Texture2D (arenaSize,arenaSize);
-            mainPixelMap = mainTexture.GetPixels ();
+            mainArenaTexture = new Texture2D (arenaSize,arenaSize);
+            mainPixelMap = mainArenaTexture.GetPixels ();
 
             // Setting Arena background color
             SetArenaBgColor (Color.black);
 
             // Antialiasing mode
-            mainTexture.filterMode = FilterMode.Trilinear;
+            mainArenaTexture.filterMode = FilterMode.Trilinear;
 
             // Setting texture to Arena renderer
             MeshRenderer renderer = GetComponent<MeshRenderer> ();
-            renderer.sharedMaterial.mainTexture = mainTexture;
+            renderer.sharedMaterial.mainTexture = mainArenaTexture;
         }
 
+        // MAIN COLLISION DETECTION ALGHORITM
         // Checks collision and draws each active player on main texture
-        public void RedrawArena (GameManager level)
+        public void RedrawPlayers (GameManager manager)
         {
-            foreach (Player player in level.players)
+            foreach (Player player in manager.players)
             {
                 // Move only active players
                 if (player.IsActive)
                 {
-                    int playerSize = player.PlayerSize;
-                    float playerSpeed = player.PlayerSpeed;
+                    int playerSize = player.Size;
+                    float playerSpeed = player.Speed;
 
                     // Delta of position change ( values between -1 and 1)
-                    float deltaX = Mathf.Sin(Mathf.PI * player.PlayerDirection);
-                    float deltaY = Mathf.Cos(Mathf.PI * player.PlayerDirection);
+                    float deltaX = Mathf.Sin(Mathf.PI * player.Direction);
+                    float deltaY = Mathf.Cos(Mathf.PI * player.Direction);
 
                     // Indicates an amount of lines to fill space between next player positions
                     int densityFactor = 3 * Mathf.CeilToInt(playerSpeed + playerSize * 0.2f);
@@ -110,11 +112,11 @@ namespace ProjectScopes
                                     if (player.IsActive && CheckCollision(posX + collisionFactor * deltaY, posY + collisionFactor * deltaX))
                                     {
                                         player.IsActive = false;
-                                        level.AddPoints();
+                                        manager.AddPoints();
                                     }
                                 }
 
-                                DrawPixel(posX, posY, player.PlayerColor);
+                                DrawPixel(posX, posY, player.Colour);
                             }
                         }
                     }
@@ -134,9 +136,9 @@ namespace ProjectScopes
 
         bool CheckCollision(float x, float y)
         {
-            int index = PositionToPixMapIndex(x, y);
+            int pixMapIndex = PositionToPixMapIndex(x, y);
 
-            if (mainPixelMap[index] != Color.black) 
+            if (mainPixelMap[pixMapIndex] != Color.black) 
             {
                 return true;
             }
@@ -147,22 +149,22 @@ namespace ProjectScopes
 
     	void DrawPixel (float x, float y, Color col)
     	{
-            int index = PositionToPixMapIndex(x, y);
+            int pixMapIndex = PositionToPixMapIndex(x, y);
 
-            mainPixelMap[index] = col;
+            mainPixelMap[pixMapIndex] = col;
     	}
             
         // Maps 2D position coordinates to pixel table index
         int PositionToPixMapIndex(float x, float y)
         {
-            int pos = (Mathf.FloorToInt (y) * arenaSize + Mathf.FloorToInt (x)) % mainPixelMap.Length;
+            int pixelPosition = (Mathf.FloorToInt (y) * arenaSize + Mathf.FloorToInt (x)) % mainPixelMap.Length;
 
-            if (pos < 0) 
+            if (pixelPosition < 0) 
             {
-                pos = (mainPixelMap.Length + pos) % mainPixelMap.Length;
+                pixelPosition = (mainPixelMap.Length + pixelPosition) % mainPixelMap.Length;
             }
 
-            return pos;
+            return pixelPosition;
         }
 
 
@@ -179,8 +181,8 @@ namespace ProjectScopes
 
         void RefreshTexture()
         {
-            mainTexture.SetPixels (mainPixelMap);
-            mainTexture.Apply (false);
+            mainArenaTexture.SetPixels (mainPixelMap);
+            mainArenaTexture.Apply (false);
         }
     }
 }
