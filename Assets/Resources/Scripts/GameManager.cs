@@ -240,17 +240,20 @@ namespace ProjectScopes
 
         void HandlePause()
         {
-            pause = !pause;
-
-            GameObject pausePane = GameObject.Find("PausePanel");
-
-            if (pausePane)
+            if (!roundEndDelay)
             {
-                pausePane.transform.GetComponent<Canvas>().enabled = pause;
-            }
-            else
-            {
-                Debug.LogError("no PausePanel object");
+                pause = !pause;
+
+                GameObject pausePane = GameObject.Find("PausePanel");
+
+                if (pausePane)
+                {
+                    pausePane.transform.GetComponent<Canvas>().enabled = pause;
+                }
+                else
+                {
+                    Debug.LogError("no PausePanel object");
+                }
             }
         }
 
