@@ -42,7 +42,10 @@ namespace ProjectScopes
     public class GameManager : MonoBehaviour 
     {
         // Countdown between levels starts with this value.
-        private const int Counter = 3;
+        private const int Counter = 4;
+
+        // Current counter value.
+        private int counter = Counter;
 
         // The duration between two counter values.
         private const float Timeout = 1.0f;
@@ -145,7 +148,7 @@ namespace ProjectScopes
             // Move players to initial positions before round start
             MovePlayers();
 
-            StartCoroutine(CountDown());
+            StartCoroutine("CountDown");
         }
     	
         
@@ -258,25 +261,29 @@ namespace ProjectScopes
         // Starts cunter and runs it between scenes.
         private IEnumerator CountDown()
         {
-            countdownEnabled = true;
-
-            GameObject countdownPanel = GameObject.Find("CountdownPanel");
-            countdownPanel.transform.GetComponent<Canvas>().enabled = true;
-
-            int value = Counter;
-            while (value > 0)
+            if (counter > 0)
             {
-                countdownPanel.GetComponentInChildren<Text>().text = value.ToString();
-                yield return new WaitForSeconds(Timeout);
+                countdownEnabled = true;
 
-                --value;
+                GameObject countdownPanel = GameObject.Find("CountdownPanel");
+                countdownPanel.transform.GetComponent<Canvas>().enabled = true;
+
+                while (counter > 1)
+                {
+                    countdownPanel.GetComponentInChildren<Text>().text = (counter - 1).ToString();
+                    yield return new WaitForSeconds(Timeout);
+
+                    --counter;
+                }
+
+                countdownPanel.GetComponentInChildren<Text>().text = "GO!";
+                yield return new WaitForSeconds(Timeout / 4.0f);
+
+                --counter;
+
+                countdownPanel.transform.GetComponent<Canvas>().enabled = false;
+                countdownEnabled = false;
             }
-
-            countdownPanel.GetComponentInChildren<Text>().text = "GO!";
-            yield return new WaitForSeconds(Timeout / 4.0f);
-
-            countdownPanel.transform.GetComponent<Canvas>().enabled = false;
-            countdownEnabled = false;
         }
 
 
@@ -317,6 +324,43 @@ namespace ProjectScopes
             exit.onClick.AddListener(() => QuitGame());
         }
 
+        // Shows the panel with exit game question.
+        private void ShowExitGamePanel()
+        {
+            GameObject exitGamePanel = GameObject.Find("ExitGamePanel");
+            bool enabled = exitGamePanel.transform.GetComponent<Canvas>().enabled;
+            exitGamePanel.transform.GetComponent<Canvas>().enabled = !enabled;
+            // Show panel.
+            if (!enabled)
+            {
+                pauseEnabled = true;
+                StopCoroutine("CountDown");
+
+                Button yesButton = GameObject.Find("YesButton").
+                                   GetComponent<Button>();
+                yesButton.onClick.AddListener(() =>
+                                              SceneManager.LoadScene("GUI"));
+
+                Button noButton = GameObject.Find("NoButton").
+                                   GetComponent<Button>();
+                noButton.onClick.AddListener(() => 
+                                             HideExitGamePanel(exitGamePanel));
+            }
+            // Continue counting if needed.
+            else
+            {
+                StartCoroutine("CountDown");
+                pauseEnabled = false;
+            }
+        }
+
+        // Hides the exit game panel.
+        private void HideExitGamePanel(GameObject panel)
+        {
+            panel.transform.GetComponent<Canvas>().enabled = false;
+            pauseEnabled = false;
+            StartCoroutine("CountDown");
+        }
 
         void ShufflePlayers()  
         { 
@@ -347,6 +391,12 @@ namespace ProjectScopes
                 {
                     HandlePause();
                 }
+            }
+
+            // ESC - "Do you wan to exit?" screen.
+            if (Input.GetKeyDown(KeyCode.Escape))
+            {
+                ShowExitGamePanel();
             }
 
 
