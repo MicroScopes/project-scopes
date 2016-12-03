@@ -148,6 +148,7 @@ namespace ProjectScopes
             // Move players to initial positions before round start
             MovePlayers();
 
+            ResetCounter();
             StartCoroutine("CountDown");
         }
     	
@@ -255,6 +256,12 @@ namespace ProjectScopes
             {
                 Debug.LogError("no PausePanel object");
             }
+        }
+
+        // Resets couroutine counter.
+        private void ResetCounter()
+        {
+            counter = 4;
         }
 
 
