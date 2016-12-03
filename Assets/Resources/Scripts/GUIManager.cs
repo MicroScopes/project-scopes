@@ -231,13 +231,29 @@ public class GUIManager: MonoBehaviour
 
         // Display panel on the GUI.
         LoadPanel(enabledPanel, disabledPanel, id);
+
+        UpdateStartButtonStatus();
     }
 
     // Gets user input and updates player movement key.
     private IEnumerator GetPlayerMovementKey(int id, Button keyButton)
     {
+        Button keyLeft = GUIHelper.Find<Button>
+                         (GUIHelper.Find("Player" + id + "KeyLeftButton"));
+        Button keyRight = GUIHelper.Find<Button>
+                          (GUIHelper.Find("Player" + id + "KeyRightButton"));
         while (true)
         {
+            // Disable Start button while waiting for user input.
+            Button start = GUIHelper.Find<Button>
+                                     (GUIHelper.Find("StartButton"));
+            GUIHelper.SetButtonEnabled(start, false);
+            GUIHelper.SetButtonEnabled(keyButton, false);
+
+            // Disable MovementKeys button  while waiting for user input.
+            keyLeft.interactable = false;
+            keyRight.interactable = false;
+
             if (Input.anyKeyDown)
             {
                 // Decode the key.
@@ -268,6 +284,13 @@ public class GUIManager: MonoBehaviour
 
             yield return null;
         }
+
+        // Delay a little change of button status.
+        yield return new WaitForSeconds(0.10f);
+        UpdateStartButtonStatus();
+        GUIHelper.SetButtonEnabled(keyButton, true);
+        keyLeft.interactable = true;
+        keyRight.interactable = true;
     }
     
     // Sets the initial value and adds action listener to the arena size
@@ -361,6 +384,28 @@ public class GUIManager: MonoBehaviour
     private void StartGame()
     {
         SceneManager.LoadScene("Main");
+    }
+
+    // Updates status of StartButton.
+    private void UpdateStartButtonStatus()
+    {
+        // Get StartButton.
+        Button start = GUIHelper.Find<Button>(GUIHelper.Find("StartButton"));
+
+        // Check if all players have movement keys set.
+        foreach (PlayerInitialData player in configurator.PlayersData)
+        {
+            if (player != null)
+            {
+                if (player.LeftKey == KeyCode.None ||
+                    player.RightKey == KeyCode.None)
+                {
+                    GUIHelper.SetButtonEnabled(start, false);
+                    return;
+                }
+            }
+        }
+        GUIHelper.SetButtonEnabled(start, true);
     }
 
     // Quit the game.

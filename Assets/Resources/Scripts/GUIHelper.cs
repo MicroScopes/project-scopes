@@ -264,6 +264,25 @@ public class GUIHelper
     }
 
     /*!
+     * @bried Sets button interactable and color.
+     *
+     * @details Depending on button state sets its properties.
+     * @param button Button to be modified.
+     * @param enabled Button state.
+     */
+    public static void SetButtonEnabled(Button button, bool enabled)
+    {
+        Color buttonColor = Find<Image>(button.gameObject).color;
+        buttonColor.a = enabled ? 1.0f : 0.25f;
+        button.interactable = enabled;
+        Find<Image>(button.gameObject).color = buttonColor;
+
+        Color textColor = FindChild<Text>(button.gameObject).color;
+        textColor.a = enabled ? 1.0f : 0.25f;
+        FindChild<Text>(button.gameObject).color = textColor;
+    }
+
+    /*!
      * @brief Updates GUI components with the initial player data.
      *
      * @details The data here is the actual data that is stored in the
@@ -279,6 +298,7 @@ public class GUIHelper
             // Nickname.
             InputField nickname = FindChild<InputField>(panel);
             nickname.text = player.Nickname;
+            nickname.placeholder.GetComponent<Text>().text = player.Nickname;
 
             // Color.
             Image color = Find<Image>(FindChild<InputField>(panel).gameObject);
@@ -348,7 +368,11 @@ public class GUIHelper
      */
     public static char ValidateNickname(string text, int index, char addedChar)
     {
-        // Else return addedChar converted to uppercase.
+        // Return addedChar converted to uppercase.
+        if (char.IsWhiteSpace(addedChar))
+        {
+            return char.MinValue;
+        }
         return char.ToUpper(addedChar);
     }
 }
