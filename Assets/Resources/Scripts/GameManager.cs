@@ -51,7 +51,10 @@ namespace ProjectScopes
         private const float Timeout = 1.0f;
 
         // Determines whether countdown is running.
-        private bool countdownEnabled = false; 
+        private bool countdownEnabled = false;
+
+        // Indicates if ExitScreen is shown.
+        private bool exitScreenEnabled = false;
 
         // Determines whether next round start is delaying.
         private bool roundEndDelay = false; 
@@ -138,18 +141,21 @@ namespace ProjectScopes
 
         void StartRound()
         {
-            arena.SetupArena(gameConfiguration.ArenaSize);
+            if (!pauseEnabled && !exitScreenEnabled)
+            {
+                arena.SetupArena(gameConfiguration.ArenaSize);
 
-            ResetPlayers();
+                ResetPlayers();
 
-            // Shuffles players to randomize winner in case of head to head collision
-            ShufflePlayers();
+                // Shuffles players to randomize winner in case of head to head collision
+                ShufflePlayers();
 
-            // Move players to initial positions before round start
-            MovePlayers();
+                // Move players to initial positions before round start
+                MovePlayers();
 
-            ResetCounter();
-            StartCoroutine("CountDown");
+                ResetCounter();
+                StartCoroutine("CountDown");
+            }
         }
     	
         
@@ -160,7 +166,7 @@ namespace ProjectScopes
             {
                 nextFrame = Time.time + frameRate;
 
-                if (!countdownEnabled && !pauseEnabled)
+                if (!pauseEnabled && !countdownEnabled && !exitScreenEnabled)
                 {
                     MovePlayers();
                 }
@@ -256,6 +262,15 @@ namespace ProjectScopes
             {
                 Debug.LogError("no PausePanel object");
             }
+
+            if (pauseEnabled)
+            {
+                StopCoroutine("CountDown");
+            }
+            else
+            {
+                StartCoroutine("CountDown");
+            }
         }
 
         // Resets couroutine counter.
@@ -337,10 +352,11 @@ namespace ProjectScopes
             GameObject exitGamePanel = GameObject.Find("ExitGamePanel");
             bool enabled = exitGamePanel.transform.GetComponent<Canvas>().enabled;
             exitGamePanel.transform.GetComponent<Canvas>().enabled = !enabled;
+
             // Show panel.
             if (!enabled)
             {
-                pauseEnabled = true;
+                exitScreenEnabled = true;
                 StopCoroutine("CountDown");
 
                 Button yesButton = GameObject.Find("YesButton").
@@ -357,7 +373,7 @@ namespace ProjectScopes
             else
             {
                 StartCoroutine("CountDown");
-                pauseEnabled = false;
+                exitScreenEnabled = false;
             }
         }
 
@@ -394,7 +410,7 @@ namespace ProjectScopes
             // SPACE KEY - pause
             if(Input.GetKeyDown(KeyCode.Space))
             {
-                if (!roundEndDelay && !countdownEnabled)
+                if (!exitScreenEnabled)
                 {
                     HandlePause();
                 }
@@ -403,7 +419,10 @@ namespace ProjectScopes
             // ESC - "Do you wan to exit?" screen.
             if (Input.GetKeyDown(KeyCode.Escape))
             {
-                ShowExitGamePanel();
+                if (!pauseEnabled)
+                {
+                    ShowExitGamePanel();
+                }
             }
 
 
