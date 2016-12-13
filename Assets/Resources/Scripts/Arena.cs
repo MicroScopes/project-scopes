@@ -42,10 +42,10 @@ namespace ProjectScopes
         private Texture2D mainArenaTexture;
 
     	
-        void Awake() 
-        {
-            // empty
-    	}
+        //void Awake() 
+        //{
+        //    
+    	//}
 
 
         public void SetupArena(int arenaSize)
@@ -56,11 +56,11 @@ namespace ProjectScopes
             mainArenaTexture = new Texture2D (arenaSize,arenaSize);
             mainPixelMap = mainArenaTexture.GetPixels ();
 
-            // Setting Arena background color
-            SetArenaBgColor (Color.black);
+            ClearArena ();
 
             // Antialiasing mode
             mainArenaTexture.filterMode = FilterMode.Trilinear;
+            mainArenaTexture.alphaIsTransparency = true;
 
             // Setting texture to Arena renderer
             MeshRenderer renderer = GetComponent<MeshRenderer> ();
@@ -109,7 +109,7 @@ namespace ProjectScopes
                                 if (i % 2 == 0 && j % 2 == 1)
                                 {
                                     // Check collision in front of the line
-                                    if (player.IsActive && CheckCollision(posX + collisionFactor * deltaY, posY + collisionFactor * deltaX))
+                                    if (player.IsActive && !player.IsGodMode() && CheckCollision(posX + collisionFactor * deltaY, posY + collisionFactor * deltaX))
                                     {
                                         player.IsActive = false;
                                         manager.AddPoints();
@@ -138,7 +138,7 @@ namespace ProjectScopes
         {
             int pixMapIndex = PositionToPixMapIndex(x, y);
 
-            if (mainPixelMap[pixMapIndex] != Color.black) 
+            if (mainPixelMap[pixMapIndex].a != 0f)// != Color.black) 
             {
                 return true;
             }
@@ -168,11 +168,13 @@ namespace ProjectScopes
         }
 
 
-    	void SetArenaBgColor (Color col)
+    	void ClearArena ()
     	{
+            Color background = new Color(0f, 0f, 0f, 0f);
+
     		for (int i = 0; i < mainPixelMap.Length; i++) 
     		{
-    			mainPixelMap [i] = col;
+                mainPixelMap[i] = background;
     		}
 
             RefreshTexture();

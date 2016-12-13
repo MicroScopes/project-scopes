@@ -64,12 +64,16 @@ namespace ProjectScopes
 
         private Configurator gameConfiguration;
         private Arena arena;
+        private Bonus bonus;
 
         public List<Player> players;
 
         // Variables used for simple frame rate control
         private float frameRate = 0.01f;
         private float nextFrame = 0.0f;
+
+        private int bonusCounter = 0;
+        private int bonusDelay = 200;
 
         private int winningScore;
 
@@ -83,6 +87,7 @@ namespace ProjectScopes
             Screen.SetResolution(gameConfiguration.ArenaSize, gameConfiguration.ArenaSize, false);
 
             LoadArena();
+            LoadBonus();
             LoadPlayers();
 
             StartRound();
@@ -91,15 +96,23 @@ namespace ProjectScopes
         // Loads Arena prefab
         public void LoadArena()
         {
-            arena = Resources.Load("Prefabs/Arena", typeof(Arena)) as Arena;
+            //arena = Resources.Load("Prefabs/Arena", typeof(Arena)) as Arena;
+            arena = GameObject.Find("Arena").GetComponent<Arena>();
 
-            if (arena)
+            if (!arena)
             {
-                Instantiate(arena);
+                Debug.LogError("Arena not found");
             }
-            else
+        }
+
+        // Loads Bonus prefab
+        public void LoadBonus()
+        {
+            bonus = Resources.Load("Prefabs/Bonus", typeof(Bonus)) as Bonus;
+
+            if (!bonus)
             {
-                Debug.LogError("Arena prefab not found");
+                Debug.LogError("Bonus prefab not found");
             }
         }
 
@@ -169,6 +182,8 @@ namespace ProjectScopes
                 if (!pauseEnabled && !countdownEnabled && !exitScreenEnabled)
                 {
                     MovePlayers();
+
+                    HandleBonus();
                 }
             }
 
@@ -199,6 +214,23 @@ namespace ProjectScopes
         }
 
 
+        private void HandleBonus()
+        {
+            if (bonusCounter >= bonusDelay)
+            {
+                bonusCounter = 0;
+                Bonus newBonus = Instantiate(bonus);
+                newBonus.transform.SetParent(gameObject.transform);
+
+                newBonus.SetPosition(arena.transform.localScale.x);
+            }
+            else
+            {
+                ++bonusCounter;
+            }
+        }
+
+
         void CheckIfGameOver()
         {
             if (gameOver)
@@ -219,9 +251,18 @@ namespace ProjectScopes
             yield return new WaitForSeconds(seconds);
 
             roundEndDelay = false;
+
+            ClearBonuses();
             StartRound();
         }
 
+        private void ClearBonuses()
+        {
+            for (int ind = 0; ind < gameObject.transform.childCount; ind++)
+            {
+                Destroy(gameObject.transform.GetChild(ind).gameObject);
+            }
+        }
 
         public void AddPoints()
         {

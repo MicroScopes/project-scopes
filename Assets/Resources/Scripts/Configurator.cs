@@ -38,7 +38,7 @@ public class Configurator
 {
     // Initial size of the arena. User is able to specify whether the size
     // should be small (0), normal (1) or large (2). Default value: normal.
-    private readonly List<int> ArenaSizes = new List<int> { 600, 800, 1000 };
+    private readonly List<int> ArenaSizes = new List<int> { 700, 800, 900 };
 
     // List of all players initial data.
     private List<PlayerInitialData> playersData = new List<PlayerInitialData>()

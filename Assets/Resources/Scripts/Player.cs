@@ -63,6 +63,12 @@ namespace ProjectScopes
 
         private Configurator gameConfiguration;
 
+        private bool bigTurns = false;
+
+        private bool godMode = false;
+
+        private int turnsDirection = 1;
+
     	// Use this for initialization
         void Awake () 
         {
@@ -134,6 +140,9 @@ namespace ProjectScopes
             playerSpeed = gameConfiguration.PlayerSpeed;
             playerDirection = Random.Range(0.0f, 2.0f);
 
+            bigTurns = false;
+            turnsDirection = 1;
+
             this.transform.position = new Vector3(-1.0f, -1.0f, 0.0f);
 
             foreach (GameObject head in borderHeads)
@@ -153,14 +162,7 @@ namespace ProjectScopes
             {
                 int hSize = Mathf.CeilToInt((holeSize / playerSpeed) * playerSize);
 
-                if (Input.GetKey (MovementKeys[0])) 
-                {
-                    playerDirection += angleScalar + (playerSpeed - 1.0f) * 0.004f;
-                }
-                if (Input.GetKey (MovementKeys[1])) 
-                {
-                    playerDirection -= angleScalar + (playerSpeed - 1.0f) * 0.004f;
-                }
+                Turn();
 
                 if (holeDelay < holeTimer)
                 {
@@ -184,6 +186,33 @@ namespace ProjectScopes
                 float headSize = 2 * arenaScalar * playerSize;
 
                 this.transform.localScale = new Vector3 (headSize, headSize, headSize);
+            }
+        }
+
+
+        private void Turn()
+        {
+            if (!bigTurns)
+            {
+                if (Input.GetKey(MovementKeys[0]))
+                {
+                    playerDirection += (angleScalar + (playerSpeed - 1.0f) * 0.004f) * turnsDirection;
+                }
+                if (Input.GetKey(MovementKeys[1]))
+                {
+                    playerDirection -= (angleScalar + (playerSpeed - 1.0f) * 0.004f) * turnsDirection;
+                }
+            }
+            else
+            {
+                if (Input.GetKeyDown(MovementKeys[0]))
+                {
+                    playerDirection += 0.5f * turnsDirection;
+                }
+                if (Input.GetKeyDown(MovementKeys[1]))
+                {
+                    playerDirection -= 0.5f * turnsDirection;
+                }
             }
         }
 
@@ -310,7 +339,7 @@ namespace ProjectScopes
 
         public void IncreaseSpeed ()
         {
-            if (playerSpeed <= 8)
+            if (playerSpeed <= 16)
             {
                 playerSpeed *= 2;
             }
@@ -356,6 +385,32 @@ namespace ProjectScopes
             }
         }
 
+
+        public bool BigTurns
+        {
+            set
+            {
+                bigTurns = value;
+            }
+        }
+
+
+        public int TurnsDirection
+        {
+            set
+            {
+                if (value < 0)
+                {
+                    turnsDirection = -1;
+                }
+                else
+                {
+                    turnsDirection = 1;
+                }
+            }
+        }
+
+
         public bool IsActive
         {
             get
@@ -389,6 +444,11 @@ namespace ProjectScopes
         {
             set;
             get;
+        }
+
+        public bool IsGodMode()
+        {
+            return godMode;
         }
     }
 }
